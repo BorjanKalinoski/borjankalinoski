@@ -1,12 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 .react-pdf__Page__textContent {
     display: none;
 }
 .react-pdf__Page__annotations{
     display: none;
 }
+
+.react-pdf__message--loading{
+    display: none;
+}
+
 body {
 
 }
