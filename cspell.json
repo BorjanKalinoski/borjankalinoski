@@ -1,0 +1,10 @@
+{
+  "language": "en",
+  "ignorePaths": ["node_modules"],
+  "words": [
+    "borjan",
+    "kalinoski",
+    "borjankalinoski",
+    "tailwindcss"
+  ]
+}

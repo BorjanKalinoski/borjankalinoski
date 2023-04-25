@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cspell": "cspell \"**\""
   },
   "dependencies": {
     "@types/node": "18.15.11",
@@ -24,6 +25,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@types/react-pdf": "6.2.0"
+    "@types/react-pdf": "6.2.0",
+    "cspell": "6.31.1"
   }
 }
