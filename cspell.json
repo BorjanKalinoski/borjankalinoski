@@ -1,9 +1,11 @@
 {
   "language": "en",
-  "ignorePaths": ["node_modules"],
+  "ignorePaths": ["node_modules", "Dockerfile"],
   "words": [
     "kalinoski",
     "borjankalinoski",
-    "tailwindcss"
+    "tailwindcss",
+    "surrealdb",
+    "signin"
   ]
 }
