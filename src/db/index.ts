@@ -7,7 +7,7 @@ const {
   default: Surreal,
 } = require('surrealdb.js');
 
-export const db = new Surreal('http://127.0.0.1:8000/rpc', {
+export const db = new Surreal('https://borjankalinoski.fly.dev/rpc', {
   db: dbDatabase,
   ns: dbNamespace,
 });
