@@ -1,7 +1,7 @@
 import {
   dbDatabase,
   dbNamespace,
-} from '~/db/config';
+} from '~/app/db/config';
 
 const {
   default: Surreal,

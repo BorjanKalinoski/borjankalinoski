@@ -1,11 +1,19 @@
 {
   "language": "en",
-  "ignorePaths": ["node_modules", "Dockerfile"],
+  "ignorePaths": ["node_modules"],
   "words": [
-    "kalinoski",
     "borjankalinoski",
+    "kalinoski",
+
     "tailwindcss",
+
     "surrealdb",
-    "signin"
+    "srdb",
+
+    "signin",
+
+    "uploadthing",
+
+    "rehype"
   ]
 }
