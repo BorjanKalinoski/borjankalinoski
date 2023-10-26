@@ -1,0 +1,50 @@
+#V2
+DEFINE TABLE user SCHEMAFULL\n PERMISSIONS\n   FOR update WHERE id = $auth.id\n   FOR delete WHERE id = $auth.id\n   FOR select FULL;
+DEFINE FIELD email ON user TYPE string ASSERT string::lowercase(string::is::email($value));\nDEFINE FIELD password ON user TYPE string PERMISSIONS FOR select NONE;\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n            email = string::lowercase($email) AND\n            crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n            email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+INFO FOR DB;
+DEFINE TABLE user SCHEMAFULL\n PERMISSIONS\n   FOR select, update, delete FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;
+USE NS test;
+DEFINE TABLE user SCHEMAFULL\n PERMISSIONS\n   FOR select, update, delete FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;
+USE NS test;
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n            email = string::lowercase($email) AND\n            crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n			password: crypto::argon2::generate($password)\n        }\n    );\n
+USE NS test;
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n            email = string::lowercase($email) AND\n            crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n			password: crypto::argon2::generate($password)\n        }\n    );\n
+INFO FOR DB;
+DEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\n
+INFO FOR DB;
+SELECT * from user;
+CREATE user CONTENT { email: "cigan@test.com", password: "cigan"}
+select * from USEr;
+select * from user;
+SELECT * from user;
+DELETE user:ingshyjvu6aergqc3a8d;
+SELECT * from user;
+DELETE user:5ywnuqgt20p8crh5666g;
+SELECT * from user;
+CREATE user CONTENT { email: "cigan@test.com", password: crypto::argon2::generate("$password") }
+SELECT * FROM user;
+SELECT * FROM user WHERE email="cigan@test.com"
+SELECT * FROM user WHERE email="cigan@test.com" AND crypto::argon2::compare(password, $password)
+SELECT * FROM user WHERE email="cigan@test.com" AND crypto::argon2::compare(password, "$password");
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR update WHERE id = $auth.id\n        FOR delete WHERE id = $auth.id\n        FOR select FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::lowercase(string::is::email($value));\nDEFINE FIELD password ON user TYPE string PERMISSIONS FOR select NONE;\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n            email = string::lowercase($email) AND\n            crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n			password: crypto::argon2::generate($password)\n        }\n    );\n
+INFO for db;
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR update WHERE id = $auth.id\n        FOR delete WHERE id = $auth.id\n        FOR select FULL\n        FOR create FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n            email = string::lowercase($email) AND\n            crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n			password: crypto::argon2::generate($password)\n        }\n    );\n
+SELECT * from user;
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR update WHERE id = $auth.id\n        FOR delete WHERE id = $auth.id\n        FOR select FULL\n        FOR create FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR update WHERE id = $auth.id\n        FOR delete WHERE id = $auth.id\n        FOR select FULL\n        FOR create FULL;\n\nDEFINE FIELD email ON user TYPE string ASSERT string::is::email($value);\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n\nDEFINE INDEX unique_email ON user FIELDS email UNIQUE;\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n			email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+SELECT * from user;
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR select, update, delete WHERE id = $auth.id;\n;
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n            email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+SELECT * from user;
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR select, update, delete WHERE id = $auth.id;\n\nDEFINE FIELD email ON user TYPE string;\nDEFINE FIELD password ON user TYPE string;\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n            email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+SELECT * FROM user;
+INFO for DB;
+DEFINE TABLE user SCHEMAFULL\n    PERMISSIONS\n        FOR create FULL\n        FOR select FULL\n        FOR update WHERE id=$auth.id\n        FOR delete WHERE id=$auth.id;\n\nDEFINE FIELD email ON user TYPE string VALUE string::lowercase($value);\nDEFINE FIELD password ON user TYPE string;\nDEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();\nDEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();\n
+DEFINE SCOPE user SESSION 7d\n    SIGNIN (\n        SELECT * FROM user\n        WHERE\n                email = string::lowercase($email) AND\n                crypto::argon2::compare(password, $password)\n    )\n    SIGNUP (\n        CREATE user CONTENT {\n            email: $email,\n            password: crypto::argon2::generate($password)\n        }\n    );\n
+SELECT * FROM user;
