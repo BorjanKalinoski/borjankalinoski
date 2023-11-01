@@ -27,11 +27,11 @@ const signIn: Action = async ({ request, cookies }) => {
   const { email, password } = form.data;
 
   const token = await database.signin({
-    DB: 'test',
+    database: 'test',
     email,
-    NS: 'test',
+    namespace: 'test',
     password,
-    SC: 'user',
+    scope: 'user',
   });
 
   if (!token) {

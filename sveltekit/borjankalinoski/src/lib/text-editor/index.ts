@@ -81,6 +81,10 @@ export class TextEditor {
     return this.editor?.getContents();
   }
 
+  public getHtml(): string {
+    return this.editor.root.innerHTML;
+  }
+
   public getSelection() {
     return this.editor?.getSelection();
   }

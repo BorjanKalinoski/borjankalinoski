@@ -22,7 +22,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  default: async ({ request, locals: { currentUser } }) => {
     const now = Date.now();
 
     const formData = await request.formData();
@@ -48,38 +48,30 @@ export const actions: Actions = {
       thumbnailImageStorageReference,
     );
 
-    const content = JSON.parse(form.data.content);
+    const content = form.data.content;
 
     await database.query(
       `
         LET $now = time::now();
 
         CREATE blog SET
-        createdAt = $now,
-        updatedAt = $now,
-        content = $content,
-        thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
-        title = $title
+          createdAt = $now,
+          updatedAt = $now,
+          content = $content,
+          thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
+          title = $title,
+          userId = $userId
     `,
       {
         content,
         thumbnailImageDownloadUrl,
         title: form.data.title,
+        userId: currentUser?.id,
       },
     );
-
-    await database.create('blog', {
-      content,
-      thumbnailImageDownloadUrl,
-      title: form.data.title,
-    });
 
     return {
       form,
     };
   },
 };
-// TODO
-// 1. Find a way to store and load
-// 2. move everything to camelCase
-// 2.

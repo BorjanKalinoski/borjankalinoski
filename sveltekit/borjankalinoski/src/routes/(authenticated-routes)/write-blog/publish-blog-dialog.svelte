@@ -4,6 +4,16 @@
     export let form;
 </script>
 
+<style>
+    dialog:not([open]){
+        display:none;
+    }
+
+
+    dialog{
+        display:grid;
+    }
+</style>
 
 <dialog bind:this={publishBlogDialog} class="relative w-[500px] h-[250px] rounded flex flex-col px-8 py-5">
    <CloseIcon

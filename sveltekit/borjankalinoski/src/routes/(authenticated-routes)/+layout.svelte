@@ -4,6 +4,7 @@
     header {
         display: flex;
         justify-content: flex-end;
+        align-items: center;
         gap: 10px;
         padding: 20px;
         border-bottom: 1px solid slategray;
@@ -17,23 +18,30 @@
     main {
         padding: 24px 32px;
         flex-grow: 1;
+        overflow-y: auto;
     }
 </style>
 
-<script>
-    export let data
+<script lang="ts">
+    export let data;
 
-    console.log('data',data)
+    const isAuthenticated = data.isAuthenticated;
 </script>
 
 <header>
     <a href="/blogs">Blogs</a>
     <a href="/write-blog">Write a blog</a>
     <a href="/cv">CV</a>
-    <a href="/sign-up">Sign Up</a>
-    <form action="/sign-out" method="POST">
-        <button type="submit">Log out</button>
-    </form>
+
+    {#if (isAuthenticated)}
+        <form action="/sign-out" method="POST">
+            <button type="submit">Log out</button>
+        </form>
+    {/if}
+
+    {#if (!isAuthenticated)}
+        <a href="/sign-up">Sign up</a>
+    {/if}
 </header>
 
 <main>

@@ -1,14 +1,13 @@
 import { database } from '../../../../hooks.server';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-  // const [{ result: blog }] = await database.query(
-  //   `
-  //     SELECT * FROM ${params.blog_id}
-  //     `,
-  // );
-
+export const load: PageServerLoad = async ({ params: { blog_id: blogId } }) => {
+  const [blog] = await database.query(
+    `
+      SELECT * FROM ONLY ${blogId}
+      `,
+  );
   return {
-    // blog: blog?.[0],
+    blog,
   };
 };

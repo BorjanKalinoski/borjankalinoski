@@ -2,18 +2,13 @@
     @import '$lib/text-editor/styles/default-text-editor.css';
 
     .editor-container {
-        height: 100vh;
+        height: 100%;
         display: flex;
         flex-direction: column;
     }
 </style>
 
-<script lang="t status
-">
-    import {deltaToMarkdown} from 'quill-delta-to-markdown';
-    import markdownToDelta from "markdown-to-quill-delta";
-
-    console.log('deltatomd',deltaToMarkdown)
+<script lang="ts">
     import {onMount} from 'svelte';
     import {superForm} from 'sveltekit-superforms/client';
     import PublishBlogDialog from './publish-blog-dialog.svelte'
@@ -53,11 +48,8 @@
             type: 'default',
             toolbarOptions,
         });
-
-        // TODO move to function DRY
-        $form.content = JSON.stringify(textEditor.getContent());
-        // const markdown = deltaToMarkdown(textEditor.getContent()?.ops)
-
+        // TODO move to function [DRY]
+        $form.content = textEditor.getHtml();
         $form.title = textEditor.getLine(0)[0]?.text;
 
         textEditor.setHeading({
@@ -82,14 +74,7 @@
                 });
             }
 
-            $form.content = JSON.stringify(textEditor.getContent());
-            const markdown = deltaToMarkdown(textEditor.getContent()?.ops)
-            console.log(textEditor.getContent())
-            console.log(markdown);
-
-            const delta= markdownToDelta(markdown)
-            console.log('delta', delta);
-
+            $form.content = textEditor.getHtml();
             $form.title = textEditor.getLine(0)[0]?.text;
         });
 

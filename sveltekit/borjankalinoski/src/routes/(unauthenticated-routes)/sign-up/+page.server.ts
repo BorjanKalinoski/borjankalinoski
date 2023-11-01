@@ -26,18 +26,13 @@ const signUp: Action = async ({ request }) => {
 
   const { email, password } = form.data;
 
-  try {
-    await database.signup({
-      DB: 'test',
-      email,
-      NS: 'test',
-      password,
-      SC: 'user',
-    });
-  } catch (error) {
-    console.log('ee', error);
-    throw error;
-  }
+  await database.signup({
+    database: 'test',
+    email,
+    namespace: 'test',
+    password,
+    scope: 'user',
+  });
 
   throw redirect(303, '/sign-in');
 };
