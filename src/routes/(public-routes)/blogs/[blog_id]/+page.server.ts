@@ -4,8 +4,11 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params: { blog_id: blogId } }) => {
   const [blog] = await database.query(
     `
-      SELECT * FROM ONLY ${blogId}
+      SELECT * FROM ONLY $blogId
       `,
+      {
+      blogId,
+      }
   );
   return {
     blog,
