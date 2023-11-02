@@ -12,11 +12,11 @@
     import {onMount} from 'svelte';
     import {superForm} from 'sveltekit-superforms/client';
     import PublishBlogDialog from './publish-blog-dialog.svelte'
-    import {TextEditor, type TextEditorInitialState} from "../../../lib/text-editor";
-    import {TextEditorHeading} from "../../../lib/text-editor/text-editor-heading";
-    import {TextEditorSource} from "../../../lib/text-editor/text-editor-source";
-    import {uploadFile} from "../../../lib/storage/upload-file";
-    import {getDownloadUrl} from "../../../lib/storage/get-download-url";
+    import {TextEditor, type TextEditorInitialState} from "$lib/text-editor";
+    import {TextEditorHeading} from "$lib/text-editor/text-editor-heading";
+    import {TextEditorSource} from "$lib/text-editor/text-editor-source";
+    import {uploadFile} from "$lib/storage/upload-file";
+    import {getDownloadUrl} from "$lib/storage/get-download-url";
 
     export let data;
 
@@ -48,15 +48,15 @@
             type: 'default',
             toolbarOptions,
         });
-        // TODO move to function [DRY]
-        $form.content = textEditor.getHtml();
-        $form.title = textEditor.getLine(0)[0]?.text;
 
         textEditor.setHeading({
             lineIndex: 0,
             numberOfLines: 1,
             value: TextEditorHeading.H1,
         });
+
+        $form.content = textEditor.getHtml();
+        $form.title = textEditor.getLine(0)[0]?.text;
 
         textEditor.onTextChange(() => {
             const titleFormat = textEditor.getFormat({
