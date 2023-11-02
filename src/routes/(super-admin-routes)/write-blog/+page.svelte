@@ -1,5 +1,5 @@
 <style>
-    @import '../../../lib/text-editor/styles/default-text-editor.css';
+    @import '$lib/text-editor/styles/default-text-editor.css';
 
     .editor-container {
         height: 100%;
