@@ -1,16 +1,83 @@
 import { database } from '../../../../hooks.server';
-import type { PageServerLoad } from './$types';
+import type { Action, Actions, PageServerLoad } from './$types';
+import type { Blog } from '$lib/types/blog';
 
-export const load: PageServerLoad = async ({ params: { blog_id: blogId } }) => {
-  const [blog] = await database.query(
+export const load: PageServerLoad = async ({
+  params: { blog_id: blogId },
+  locals: { currentUser },
+}) => {
+  const [
+    {
+      numberOfLikes: [numberOfLikes],
+      ...blog
+    },
+  ] = await database.query<
+    [
+      Blog & {
+        numberOfLikes: [number];
+        userHasLikedBlog: boolean;
+      },
+    ]
+  >(
     `
-      SELECT * FROM ONLY $blogId
-      `,
-      {
+        SELECT *,
+            (SELECT count(), blogId
+                   FROM likes
+                   WHERE blogId = $blogId
+                   GROUP BY blogId
+            ).count as numberOfLikes,
+            count((SELECT *
+              FROM likes
+              WHERE blogId = $blogId
+              AND userId = $userId
+            )) == 1 as userHasLikedBlog 
+        FROM ONLY $blogId;
+  `,
+    {
       blogId,
-      }
+      userId: currentUser?.id,
+    },
   );
+
   return {
     blog,
+    numberOfLikes: numberOfLikes ?? 0,
+    userHasLikedBlog: blog.userHasLikedBlog,
   };
+};
+
+const likeBlog: Action = async ({
+  params: { blog_id: blogId },
+  locals: { currentUser },
+}) => {
+  await database.query(
+    `
+      INSERT INTO likes {  
+          blogId: $blogId,
+          userId: $userId,
+          }
+      `,
+    {
+      blogId,
+      userId: currentUser?.id,
+    },
+  );
+};
+
+const dislikeBlog: Action = async ({
+  params: { blog_id: blogId },
+  locals: { currentUser },
+}) => {
+  await database.query(
+    `DELETE likes WHERE blogId = $blogId AND userId = $userId`,
+    {
+      blogId,
+      userId: currentUser?.id,
+    },
+  );
+};
+
+export const actions: Actions = {
+  'dislike-blog': dislikeBlog,
+  'like-blog': likeBlog,
 };

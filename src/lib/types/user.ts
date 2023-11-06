@@ -1,6 +1,6 @@
 export type User = {
-  created_at: string;
+  createdAt: string;
   email: string;
   id: `user:${string}`;
-  updated_at: string;
+  updatedAt: string;
 };

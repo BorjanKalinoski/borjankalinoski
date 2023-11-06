@@ -7,5 +7,6 @@ DEFINE TABLE user SCHEMAFULL
 
 DEFINE FIELD email ON user TYPE string VALUE string::lowercase($value);
 DEFINE FIELD password ON user TYPE string PERMISSIONS FOR select NONE;
-DEFINE FIELD created_at ON user VALUE $before OR time::now() DEFAULT time::now();
-DEFINE FIELD updated_at ON user VALUE time::now() DEFAULT time::now();
+
+DEFINE FIELD createdAt ON user VALUE $before OR time::now() DEFAULT time::now();
+DEFINE FIELD updatedAt ON user VALUE time::now() DEFAULT time::now();

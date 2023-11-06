@@ -1,5 +1,5 @@
-import type { User } from './types/user';
 import type { Handle } from '@sveltejs/kit';
+import type { User } from '$lib/types/user';
 import Surreal from 'surrealdb.js';
 
 export const database = new Surreal();
