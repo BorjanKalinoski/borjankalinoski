@@ -1,9 +1,3 @@
-<script lang="ts">
-    import CloseIcon from '../../../lib/icons/close-icon.svelte'
-    export let publishBlogDialog: HTMLDialogElement;
-    export let form;
-</script>
-
 <style>
     dialog:not([open]){
         display:none;
@@ -15,8 +9,20 @@
     }
 </style>
 
-<dialog bind:this={publishBlogDialog} class="relative w-[500px] h-[250px] rounded flex flex-col px-8 py-5">
-   <CloseIcon
+<script lang="ts">
+    import CloseIcon from '$lib/icons/close-icon.svelte'
+    import MultiSelect from 'svelte-multiselect'
+
+    export let publishBlogDialog: HTMLDialogElement;
+    export let form;
+    export let enhance;
+
+    let allTags: string[] = [];
+    let selectedTags: string[] = [];
+</script>
+
+<dialog bind:this={publishBlogDialog} class="relative w-[500px]  rounded flex flex-col px-8 py-5">
+    <CloseIcon
        on:click={() => publishBlogDialog.close()}
        class="cursor-pointer h-5 w-5 absolute right-1.5 top-1.5"
    />
@@ -25,9 +31,18 @@
         Preview your article
     </h1>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" use:enhance>
         <input type="text" bind:value={$form.content} name="content" hidden>
         <input type="text" bind:value={$form.title} name="title" hidden>
+
+        <MultiSelect
+                name="tags"
+                options={allTags}
+                allowUserOptions={true}
+                maxOptions={5}
+                bind:selected={selectedTags}
+                bind:value={$form.tags}
+        />
 
         <input
             bind:value={$form.thumbnail}

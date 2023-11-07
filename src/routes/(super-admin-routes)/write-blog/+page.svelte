@@ -20,7 +20,9 @@
 
     export let data;
 
-    const { form } = superForm(data.form);
+    const {form, enhance} = superForm(data.form, {
+        dataType: 'json'
+    });
 
     let publishBlogDialog: HTMLDialogElement;
 
@@ -138,6 +140,6 @@
 
 
 
-<PublishBlogDialog bind:publishBlogDialog {form} />
+<PublishBlogDialog bind:publishBlogDialog {form} {enhance} />
 
 
