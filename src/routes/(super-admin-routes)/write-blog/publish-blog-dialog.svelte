@@ -12,12 +12,15 @@
 <script lang="ts">
     import CloseIcon from '$lib/icons/close-icon.svelte'
     import MultiSelect from 'svelte-multiselect'
+    import type {Tag} from "$lib/types/tag";
 
     export let publishBlogDialog: HTMLDialogElement;
     export let form;
     export let enhance;
+    export let tags: Tag[];
 
-    let allTags: string[] = [];
+    export const allTagsWithNames = tags.map((tag) => tag.name);
+
     let selectedTags: string[] = [];
 </script>
 
@@ -36,12 +39,12 @@
         <input type="text" bind:value={$form.title} name="title" hidden>
 
         <MultiSelect
-                name="tags"
-                options={allTags}
-                allowUserOptions={true}
-                maxOptions={5}
-                bind:selected={selectedTags}
-                bind:value={$form.tags}
+            name="tags"
+            maxSelect={5}
+            options={allTagsWithNames}
+            allowUserOptions={true}
+            bind:selected={selectedTags}
+            bind:value={$form.tags}
         />
 
         <input

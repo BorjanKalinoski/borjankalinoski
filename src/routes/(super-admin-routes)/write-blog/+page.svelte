@@ -20,6 +20,8 @@
 
     export let data;
 
+    const tags = data.tags;
+
     const {form, enhance} = superForm(data.form, {
         dataType: 'json'
     });
@@ -106,10 +108,6 @@
                 value: downloadUrl,
                 source: TextEditorSource.User,
             });
-
-            const a = textEditor.getLine(indexOfImageToBeUploaded);
-
-            console.log(a[0].domNode)
         });
 
         textEditor.headerHandler((value) => {
@@ -140,6 +138,6 @@
 
 
 
-<PublishBlogDialog bind:publishBlogDialog {form} {enhance} />
+<PublishBlogDialog bind:publishBlogDialog {form} {enhance} {tags} />
 
 

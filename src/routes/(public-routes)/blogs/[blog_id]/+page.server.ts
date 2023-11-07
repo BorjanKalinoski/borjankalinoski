@@ -1,11 +1,21 @@
 import { database } from '../../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
 import type { Blog } from '$lib/types/blog';
+import type { Tag } from '$lib/types/tag';
 
 export const load: PageServerLoad = async ({
   params: { blog_id: blogId },
   locals: { currentUser },
 }) => {
+  const [blogTags] = await database.query<[Tag[]]>(
+    `
+        select * from $blogId->blogTag.out
+    `,
+    {
+      blogId,
+    },
+  );
+
   const [
     {
       numberOfLikes: [numberOfLikes],
@@ -41,6 +51,7 @@ export const load: PageServerLoad = async ({
 
   return {
     blog,
+    blogTags,
     numberOfLikes: numberOfLikes ?? 0,
     userHasLikedBlog: blog.userHasLikedBlog,
   };

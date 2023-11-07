@@ -2,6 +2,7 @@ import { database } from '../../../hooks.server';
 import type { Actions, PageServerLoad } from './$types';
 import { getDownloadUrl } from '$lib/storage/get-download-url';
 import { uploadFile } from '$lib/storage/upload-file';
+import type { Tag } from '$lib/types/tag';
 import { superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
 
@@ -17,8 +18,13 @@ const createBlogFormSchema = z
 export const load: PageServerLoad = async () => {
   const form = await superValidate(createBlogFormSchema);
 
+  const [tags] = await database.query<[Tag[]]>(`
+      select * from tag
+    `);
+
   return {
     form,
+    tags,
   };
 };
 
@@ -67,29 +73,19 @@ export const actions: Actions = {
                     userId = $userId
             )[0];
       
-            FOR $tag IN $tags {
-                LET $existingTag = SELECT * FROM tag WHERE name = $tag;
-                LET $tagId = $existingTag[0].id;
+            FOR $tagName IN $tagNames {
+                LET $existingTag = SELECT * FROM tag WHERE name = $tagName;
 
                 IF $tagId IS NONE { 
                     $newTag = CREATE tag SET 
-                        name = $tag,
+                        name = $tagName,
                         createdAt = $now,
                         updatedAt = $now;
                         
-                    $tagId = $newTag[0].id;
-                    
-                    INSERT INTO blogTag {  
-                        blogId: $blog.id,
-                        userId: $userId,
-                        tagId: $tagId,
-                    }
+                    RELATE ONLY $blog->blogTag->$newTag;
+
                 } ELSE {
-                    INSERT INTO blogTag {  
-                        blogId: $blog.id,
-                        userId: $userId,
-                        tagId: $tagId,
-                    }
+                    RELATE ONLY $blog->blogTag->$existingTag;
                 };
             };
             
@@ -97,18 +93,13 @@ export const actions: Actions = {
     `,
       {
         content,
-        tags: form.data.tags,
+        tagNames: form.data.tags,
         thumbnailImageDownloadUrl,
         title: form.data.title,
         userId: currentUser?.id,
       },
     );
-    // 1. Save new tags to DB [DONE]
-    // 2. Save blogTags to DB [DONE]
-    // 3. Fetch all tags into dropdown
-    // 4. Display tags in blog U
-    // 5. LowPrio: infinite scrolling
-    // 6. Refactor code
+
     return {
       form,
     };

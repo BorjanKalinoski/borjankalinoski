@@ -56,3 +56,29 @@ DEFINE FIELD blogId on likes TYPE record<blog>;
 DEFINE INDEX likesBlogIdIndex ON likes FIELDS blogId;
 DEFINE INDEX likesUserIdBlogIdIndex ON likes FIELDS blogId, userId UNIQUE;
 
+
+DEFINE TABLE tag SCHEMAFULL
+    PERMISSIONS
+        FOR create WHERE $scope = 'user'
+        FOR select WHERE $scope = 'user'
+        FOR update NONE
+        FOR delete NONE;
+
+
+DEFINE FIELD name ON tag TYPE string ASSERT string::len($value) > 0;
+DEFINE FIELD createdAt ON tag VALUE $before OR time::now() DEFAULT time::now();
+DEFINE FIELD updatedAt ON tag VALUE time::now() DEFAULT time::now();
+
+
+DEFINE TABLE blogTag SCHEMAFULL
+    PERMISSIONS
+        FOR create WHERE $scope = 'user'
+        FOR select FULL
+        FOR update WHERE in.userId.id = $auth.id AND tag.userId.id = $auth.id
+        FOR delete WHERE in.userId.id = $auth.id AND tag.userId.id = $auth.id;
+
+DEFINE FIELD in ON blogTag TYPE record<blog>;
+DEFINE FIELD out ON blogTag TYPE record<tag>;
+
+DEFINE FIELD createdAt ON blogTag VALUE $before OR time::now() DEFAULT time::now();
+DEFINE FIELD updatedAt ON blogTag VALUE time::now() DEFAULT time::now();
