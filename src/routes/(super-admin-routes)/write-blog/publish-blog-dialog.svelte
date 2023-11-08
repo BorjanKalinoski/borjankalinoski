@@ -1,5 +1,6 @@
 <script lang="ts">
     import CloseIcon from '$lib/icons/close-icon.svelte'
+    import LoadingSpinner from '$lib/components/loading-spinner.svelte'
     import MultiSelect from 'svelte-multiselect'
     import type {Tag} from "$lib/types/tag";
     import {superForm} from "sveltekit-superforms/client";
@@ -14,7 +15,7 @@
     export let publishBlogDialog: HTMLDialogElement;
     export let tags: Tag[];
 
-    const {form, enhance} = superForm(serverForm, {
+    const {form, enhance, submitting} = superForm(serverForm, {
         dataType: 'json',
     });
 
@@ -62,8 +63,12 @@
         />
 
         <button type="submit"
-                class="mt-auto rounded bg-blue-600 px-4 py-2 text-xs text-white font-medium uppercase  shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-blue-900 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-blue-900 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none active:bg-blue-900 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
+                class="mt-auto flex gap-x-2.5 items-center justify-center rounded bg-blue-600 px-4 py-2 text-xs text-white font-medium uppercase  shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-blue-900 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-blue-900 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none active:bg-blue-900 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
         >
+            {#if $submitting}
+                <LoadingSpinner/>
+            {/if}
+
             Publish
         </button>
     </form>
