@@ -1,21 +1,11 @@
 import { database } from '../../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
-import type { Blog } from '$lib/types/blog';
-import type { Tag } from '$lib/types/tag';
+import type { BlogWithTags } from '$lib/types/blog-with-tags';
 
 export const load: PageServerLoad = async ({
   params: { blog_id: blogId },
   locals: { currentUser },
 }) => {
-  const [blogTags] = await database.query<[Tag[]]>(
-    `
-        select * from $blogId->blogTag.out
-    `,
-    {
-      blogId,
-    },
-  );
-
   const [
     {
       numberOfLikes: [numberOfLikes],
@@ -23,7 +13,7 @@ export const load: PageServerLoad = async ({
     },
   ] = await database.query<
     [
-      Blog & {
+      BlogWithTags & {
         numberOfLikes: [number];
         userHasLikedBlog: boolean;
       },
@@ -36,11 +26,12 @@ export const load: PageServerLoad = async ({
                    WHERE blogId = $blogId
                    GROUP BY blogId
             ).count as numberOfLikes,
+            (id->blogTag.out.*) as tags,
             count((SELECT *
               FROM likes
               WHERE blogId = $blogId
               AND userId = $userId
-            )) == 1 as userHasLikedBlog 
+            )) == 1 as userHasLikedBlog
         FROM ONLY $blogId;
   `,
     {
@@ -51,7 +42,6 @@ export const load: PageServerLoad = async ({
 
   return {
     blog,
-    blogTags,
     numberOfLikes: numberOfLikes ?? 0,
     userHasLikedBlog: blog.userHasLikedBlog,
   };

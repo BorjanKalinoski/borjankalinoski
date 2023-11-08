@@ -6,9 +6,7 @@
         blog,
         numberOfLikes,
         userHasLikedBlog,
-        blogTags
     } = data;
-
 </script>
 
 <style>
@@ -23,8 +21,10 @@
     <div class="border-y-[1px] border-[#ccc] py-2.5 flex flex-col gap-2.5">
         <Likes {userHasLikedBlog} {numberOfLikes} />
         <div class="flex gap-2.5">
-            {#each blogTags as tag}
-                <p>{tag.name}</p>
+            {#each blog.tags as tag}
+                <button class="bg-gray-500 flex px-2 py-1 rounded text-white cursor-pointer text-xs">
+                    {tag.name}
+                </button>
             {/each}
         </div>
     </div>
@@ -34,3 +34,4 @@
 
 
 
+<!-- 1. List tags in blogs page-->
