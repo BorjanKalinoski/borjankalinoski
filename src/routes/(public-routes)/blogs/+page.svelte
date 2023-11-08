@@ -1,31 +1,38 @@
 <script lang="ts">
     import dayjs from "dayjs";
+    import Tag from '$lib/components/tag.svelte'
 
     export let data;
 
     const blogs = data.blogs;
 </script>
 
-{#each blogs as blog}
-        <div style="max-width: 320px; margin: auto; margin-bottom: 20px">
-            <a href="/blogs/{blog.id}">
+{#each blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt}}
+        <div class="max-w-[320px] m-auto mb-6 p-2 border border-gray-300 rounded-lg" >
+            <a href="/blogs/{id}">
                 <img
-                    style="width: 100%; height: 200px; object-fit: cover;"
-                    src="{blog.thumbnailImageDownloadUrl}"
-                    alt="{blog.title}"
+                    class="w-full h-[200px] object-cover shadow rounded-lg"
+                    src={thumbnailImageDownloadUrl}
+                    alt={title}
                 />
             </a>
 
-               <div>{dayjs(blog.createdAt).format('DD.MM.YYYY HH:mm')}</div>
+            <div class="flex flex-col gap-1.5 mt-3">
+                <a class="font-bold leading-[100%] text-lg" href="blogs/{id}">
+                    {title}
+                </a>
 
-            <div class="flex gap-2.5">
-                {#each blog.tags as tag}
-                    <button class="bg-gray-500 flex px-2 py-1 rounded text-white cursor-pointer text-xs">
-                        {tag.name}
-                    </button>
-                {/each}
+               <div class="text-sm">
+                   {dayjs(createdAt).format('D MMM, YYYY')}
+               </div>
+
+                <div class="flex gap-2.5">
+                    {#each tags as tag}
+                        <Tag {tag}/>
+                    {/each}
+                </div>
+
             </div>
-            <h1><a href="blogs/{blog.id}">{blog.title}</a></h1>
         </div>
 {/each}
 
