@@ -26,7 +26,7 @@
 
 </script>
 
-<div class=" w-max flex rounded-[50px] px-2 py-1 border border-[#ccc] gap-[4px] items-center text-sm">
+<div class=" w-max flex rounded-[50px] px-1.5 py-0.5 border border-[#ccc] gap-[4px] items-center text-sm">
     {#if userHasLikedBlog}
         <form
                 class="flex"

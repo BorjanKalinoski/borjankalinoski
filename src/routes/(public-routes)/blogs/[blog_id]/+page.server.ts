@@ -6,32 +6,19 @@ export const load: PageServerLoad = async ({
   params: { blog_id: blogId },
   locals: { currentUser },
 }) => {
-  const [
-    {
-      numberOfLikes: [numberOfLikes],
-      ...blog
-    },
-  ] = await database.query<
+  const [blog] = await database.query<
     [
       BlogWithTags & {
-        numberOfLikes: [number];
+        numberOfLikes: number;
         userHasLikedBlog: boolean;
       },
     ]
   >(
     `
         SELECT *,
-            (SELECT count(), blogId
-                   FROM likes
-                   WHERE blogId = $blogId
-                   GROUP BY blogId
-            ).count as numberOfLikes,
+            (count(id<-likes)) as numberOfLikes, 
             (id->blogTag.out.*) as tags,
-            count((SELECT *
-              FROM likes
-              WHERE blogId = $blogId
-              AND userId = $userId
-            )) == 1 as userHasLikedBlog
+            (id<-likes.in CONTAINS $userId) as userHasLikedBlog
         FROM ONLY $blogId;
   `,
     {
@@ -42,8 +29,6 @@ export const load: PageServerLoad = async ({
 
   return {
     blog,
-    numberOfLikes: numberOfLikes ?? 0,
-    userHasLikedBlog: blog.userHasLikedBlog,
   };
 };
 
@@ -53,10 +38,7 @@ const likeBlog: Action = async ({
 }) => {
   await database.query(
     `
-      INSERT INTO likes {  
-          blogId: $blogId,
-          userId: $userId,
-          }
+        RELATE ONLY $userId->likes->$blogId
       `,
     {
       blogId,
@@ -69,13 +51,10 @@ const dislikeBlog: Action = async ({
   params: { blog_id: blogId },
   locals: { currentUser },
 }) => {
-  await database.query(
-    `DELETE likes WHERE blogId = $blogId AND userId = $userId`,
-    {
-      blogId,
-      userId: currentUser?.id,
-    },
-  );
+  await database.query(`DELETE $userId->likes WHERE out = $blogId`, {
+    blogId,
+    userId: currentUser?.id,
+  });
 };
 
 export const actions: Actions = {

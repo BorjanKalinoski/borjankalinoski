@@ -1,5 +1,5 @@
 <script>
-    import MainLayout from '../../lib/layouts/main-layout.svelte'
+    import MainLayout from '$lib/layouts/main-layout.svelte'
 
     export let data;
 

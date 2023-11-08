@@ -1,12 +1,13 @@
 DEFINE TABLE likes SCHEMAFULL
  PERMISSIONS
-    FOR create FULL
+    FOR create WHERE $scope = 'user'
     FOR select FULL
-    FOR delete WHERE userId=$auth.id
+    FOR delete WHERE in.id = $auth.id
     FOR update NONE;
 
-DEFINE FIELD userId ON likes TYPE record<user> DEFAULT $auth.id;
-DEFINE FIELD blogId on likes TYPE record<blog>;
+DEFINE FIELD in ON likes TYPE record<user>;
+DEFINE FIELD out ON likes TYPE record<blog>;
 
-DEFINE INDEX likesBlogIdIndex ON likes FIELDS blogId;
-DEFINE INDEX likesUserIdBlogIdIndex ON likes FIELDS blogId, userId UNIQUE;
+DEFINE FIELD createdAt ON likes VALUE $before OR time::now() DEFAULT time::now();
+
+DEFINE INDEX userBlogLikesIndex ON likes FIELDS in, out UNIQUE;
