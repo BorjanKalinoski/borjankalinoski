@@ -70,7 +70,7 @@ export const actions: Actions = {
                     content = $content,
                     thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
                     title = $title,
-                    userId = $userId
+                    creator = $userId
             )[0];
       
             FOR $tagName IN $tagNames {

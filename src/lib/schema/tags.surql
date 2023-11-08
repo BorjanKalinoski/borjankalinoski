@@ -5,8 +5,15 @@ DEFINE TABLE tag SCHEMAFULL
         FOR update NONE
         FOR delete NONE;
 
+DEFINE FIELD name
+    ON tag
+    TYPE string
+    ASSERT string::len($value) > 0;
 
-DEFINE FIELD name ON tag TYPE string ASSERT string::len($value) > 0;
-DEFINE FIELD createdAt ON tag VALUE $before OR time::now() DEFAULT time::now();
-DEFINE FIELD updatedAt ON tag VALUE time::now() DEFAULT time::now();
-// add on delete cascade
+DEFINE FIELD createdAt ON tag
+    VALUE $before OR time::now()
+    DEFAULT time::now();
+
+DEFINE FIELD updatedAt ON tag
+    VALUE time::now()
+    DEFAULT time::now();

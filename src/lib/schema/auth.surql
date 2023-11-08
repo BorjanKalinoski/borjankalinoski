@@ -7,7 +7,7 @@ DEFINE SCOPE user SESSION 7d
     )
     SIGNUP (
         CREATE user CONTENT {
-            email: $email,
+            email: string::lowercase($email),
             password: crypto::argon2::generate($password)
         }
     );
