@@ -1,45 +1,52 @@
-<style>
-    dialog:not([open]){
-        display:none;
-    }
-
-
-    dialog{
-        display:grid;
-    }
-</style>
-
 <script lang="ts">
     import CloseIcon from '$lib/icons/close-icon.svelte'
     import MultiSelect from 'svelte-multiselect'
     import type {Tag} from "$lib/types/tag";
+    import {superForm} from "sveltekit-superforms/client";
+    import {afterUpdate} from "svelte";
+    import type {PageServerData} from "./$types";
+
+    export let serverForm: PageServerData['form'];
+    export let title: string;
+    export let content: string;
+
 
     export let publishBlogDialog: HTMLDialogElement;
-    export let form;
-    export let enhance;
     export let tags: Tag[];
+
+    const {form, enhance} = superForm(serverForm, {
+        dataType: 'json',
+    });
+
+
+    afterUpdate(() => {
+        $form.content = content;
+        $form.title = title;
+    });
+
 
     export const allTagsWithNames = tags.map((tag) => tag.name);
 
     let selectedTags: string[] = [];
 </script>
 
-<dialog bind:this={publishBlogDialog} class="relative w-[500px]  rounded flex flex-col px-8 py-5">
+<dialog bind:this={publishBlogDialog}  class="relative w-[500px] h-[300px] rounded flex flex-col px-8 py-5 [&:not([open])]:hidden">
     <CloseIcon
        on:click={() => publishBlogDialog.close()}
-       class="cursor-pointer h-5 w-5 absolute right-1.5 top-1.5"
+       class="absolute right-1.5 top-1.5 cursor-pointer h-5 w-5"
    />
 
     <h1 class="mb-4">
         Preview your article
     </h1>
 
-    <form method="POST" enctype="multipart/form-data" use:enhance>
+<form method="POST" enctype="multipart/form-data"  use:enhance class="flex flex-col gap-2.5 h-full">
         <input type="text" bind:value={$form.content} name="content" hidden>
         <input type="text" bind:value={$form.title} name="title" hidden>
 
         <MultiSelect
             name="tags"
+            ulOptionsClass="!max-h-[135px] !overflow-y-scroll"
             maxSelect={5}
             options={allTagsWithNames}
             allowUserOptions={true}

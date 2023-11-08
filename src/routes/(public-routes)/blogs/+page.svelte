@@ -26,7 +26,7 @@
                    {dayjs(createdAt).format('D MMM, YYYY')}
                </div>
 
-                <div class="flex gap-2.5">
+                <div class="flex gap-x-2.5 gap-y-1.5 flex-wrap">
                     {#each tags as tag}
                         <Tag {tag}/>
                     {/each}

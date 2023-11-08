@@ -47,6 +47,5 @@ module.exports = {
 		'node/callback-return':'off',
 		'@typescript-eslint/no-throw-literal': 'off',
 		"require-atomic-updates": "off"
-
 	}
 };
