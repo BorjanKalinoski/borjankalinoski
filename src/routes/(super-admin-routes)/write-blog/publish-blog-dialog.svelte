@@ -4,8 +4,12 @@
     import MultiSelect from 'svelte-multiselect'
     import type {Tag} from "$lib/types/tag";
     import {superForm} from "sveltekit-superforms/client";
+    import type {PageServerData, ActionData} from "./$types";
+    import {toast} from "@zerodevx/svelte-toast";
+    import {extractErrorMessage} from "$lib/utils/extract-error-message";
+    import {goto} from "$app/navigation";
+    import type {Blog} from "$lib/types/blog";
     import {afterUpdate} from "svelte";
-    import type {PageServerData} from "./$types";
 
     export let serverForm: PageServerData['form'];
     export let title: string;
@@ -15,23 +19,48 @@
     export let publishBlogDialog: HTMLDialogElement;
     export let tags: Tag[];
 
-    const {form, enhance, submitting} = superForm(serverForm, {
+    const {form, enhance, submitting, reset} = superForm(serverForm, {
         dataType: 'json',
+        onError: (event) => {
+            toast.push(
+                extractErrorMessage(event.result.error)
+            );
+        },
+        onResult: async ({result}) => {
+            const isBlogPublished = result.type === 'success'
+                && !!(result?.data as ActionData)?.blogId;
+
+            if (isBlogPublished) {
+                const blogId = (result.data as ActionData)?.blogId as Blog['id'];
+
+                publishBlogDialog.close();
+
+                toast.push('Your blog has been successfully published!');
+
+                await goto(`blogs/${blogId}`);
+            }
+        },
     });
 
+    export const allTagsWithNames = tags.map((tag) => tag.name);
 
     afterUpdate(() => {
         $form.content = content;
         $form.title = title;
     });
 
-
-    export const allTagsWithNames = tags.map((tag) => tag.name);
-
     let selectedTags: string[] = [];
+
+    let thumbnailInput: HTMLInputElement;
+
+    const onCloseDialog = () => {
+        thumbnailInput.value = '';
+        reset();
+    };
+
 </script>
 
-<dialog bind:this={publishBlogDialog}  class="relative w-[500px] h-[300px] rounded flex flex-col px-8 py-5 [&:not([open])]:hidden">
+<dialog bind:this={publishBlogDialog} class="relative w-[500px] h-[300px] rounded flex flex-col px-8 py-5 [&:not([open])]:hidden" on:close={onCloseDialog} >
     <CloseIcon
        on:click={() => publishBlogDialog.close()}
        class="absolute right-1.5 top-1.5 cursor-pointer h-5 w-5"
@@ -56,9 +85,10 @@
         />
 
         <input
+            bind:this={thumbnailInput}
+            type="file"
             bind:value={$form.thumbnail}
             name="thumbnail"
-            type="file"
             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
         />
 

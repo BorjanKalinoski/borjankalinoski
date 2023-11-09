@@ -1,6 +1,5 @@
 import { database } from '../../../hooks.server';
 import type { Actions, PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
 import { getDownloadUrl } from '$lib/storage/get-download-url';
 import { uploadFile } from '$lib/storage/upload-file';
 import type { Blog } from '$lib/types/blog';
@@ -15,6 +14,7 @@ const createBlogFormSchema = z
     thumbnail: z.custom<File>(),
     title: z.string(),
   })
+  .required()
   .strict();
 
 export const load: PageServerLoad = async () => {
@@ -106,6 +106,9 @@ export const actions: Actions = {
       },
     );
 
-    throw redirect(302, `/blogs/${blogId}`);
+    return {
+      blogId,
+      form,
+    };
   },
 };

@@ -39,10 +39,10 @@
     ];
 
     const onPublishDialogButtonClick = () => {
-        content = textEditor.getHtml();
-        title = textEditor.getLine(0)[0]?.text;
+       content = textEditor.getHtml();
+       title = textEditor.getLine(0)[0]?.text;
 
-        publishBlogDialog.showModal()
+        publishBlogDialog.showModal();
     };
 
     onMount(async () => {
@@ -80,9 +80,7 @@
                     value: TextEditorHeading.H1,
                 });
             }
-
         });
-
 
         textEditor.onUploadImage(async (file) => {
             if (file instanceof Error) {
