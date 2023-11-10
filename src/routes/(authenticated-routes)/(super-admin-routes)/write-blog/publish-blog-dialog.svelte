@@ -4,7 +4,7 @@
     import MultiSelect from 'svelte-multiselect'
     import type {Tag} from "$lib/types/tag";
     import {superForm} from "sveltekit-superforms/client";
-    import type {PageServerData, ActionData} from "./$types";
+    import type {PageServerData, ActionData} from "../../../../../.svelte-kit/types/src/routes";
     import {toast} from "@zerodevx/svelte-toast";
     import {extractErrorMessage} from "$lib/utils/extract-error-message";
     import {goto} from "$app/navigation";

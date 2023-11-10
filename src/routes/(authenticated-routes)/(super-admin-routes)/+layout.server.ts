@@ -1,4 +1,4 @@
-import type { LayoutServerLoad } from './$types';
+import type { LayoutServerLoad } from '../../../../.svelte-kit/types/src/routes';
 import { redirect } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = (event) => {

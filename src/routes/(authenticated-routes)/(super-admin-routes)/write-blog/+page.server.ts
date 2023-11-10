@@ -1,5 +1,5 @@
-import { database } from '../../../hooks.server';
-import type { Actions, PageServerLoad } from './$types';
+import { database } from '../../../../hooks.server';
+import type { Actions, PageServerLoad } from '../../../../../.svelte-kit/types/src/routes';
 import { getDownloadUrl } from '$lib/storage/get-download-url';
 import { uploadFile } from '$lib/storage/upload-file';
 import type { Blog } from '$lib/types/blog';

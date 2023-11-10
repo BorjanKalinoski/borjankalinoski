@@ -1,5 +1,5 @@
 <style>
-    @import "../../app.css";
+    @import "../../../app.css";
 
     header {
         display: flex;
