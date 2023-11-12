@@ -1,6 +1,6 @@
 import { database } from '../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
 
@@ -26,25 +26,27 @@ const signIn: Action = async ({ request, cookies }) => {
 
   const { email, password } = form.data;
 
-  const token = await database.signin({
-    database: 'test',
-    email,
-    namespace: 'test',
-    password,
-    scope: 'user',
-  });
+  try {
+    const token = await database.signin({
+      database: 'test',
+      email,
+      namespace: 'test',
+      password,
+      scope: 'user',
+    });
 
-  if (!token) {
-    return {};
+    cookies.set('token', token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 30 * 24,
+      path: '/',
+      sameSite: 'strict',
+      // secure: true, only in prod
+    });
+  } catch (error_) {
+    throw error(400, {
+      message: (error_ as Error).message,
+    });
   }
-
-  cookies.set('token', token, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 30 * 24,
-    path: '/',
-    sameSite: 'strict',
-    // secure: true, only in prod
-  });
 
   throw redirect(302, '/');
 };

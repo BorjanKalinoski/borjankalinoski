@@ -1,11 +1,18 @@
 <script lang="ts">
     import {goto} from "$app/navigation";
     import {superForm} from "sveltekit-superforms/client";
+    import {toast} from "@zerodevx/svelte-toast";
+    import {extractErrorMessage} from "$lib/utils/extract-error-message";
 
     export let data;
 
-
-    const {form, errors, enhance, delayed} = superForm(data.form);
+    const {form, errors, enhance, submitting} = superForm(data.form, {
+        onError: (event) => {
+            toast.push(
+                extractErrorMessage(event.result.error)
+            )
+        },
+    });
 
 </script>
 
@@ -21,7 +28,7 @@
         <input class="rounded p-2 mb-3" type="password" name="password" placeholder="***********" bind:value={$form.password}>
 
         <button class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3" type="submit">
-            {#if $delayed}
+            {#if $submitting}
                 <span class="animate-spin">🔄</span>
             {:else}
                 Sign Up

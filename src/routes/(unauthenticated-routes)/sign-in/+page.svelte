@@ -1,11 +1,20 @@
 <script lang="ts">
-
     import {superForm} from "sveltekit-superforms/client";
     import {goto} from "$app/navigation";
+    import {toast} from "@zerodevx/svelte-toast";
+    import {extractErrorMessage} from "$lib/utils/extract-error-message";
 
     export let data;
 
-    const {form, errors, enhance, delayed} = superForm(data.form);
+    const {form, errors, enhance, submitting} = superForm(data.form, {
+        onError: (event) => {
+            toast.push(
+                extractErrorMessage(
+                    event.result.error
+                )
+            );
+        },
+    });
 </script>
 
 <form
@@ -30,7 +39,7 @@
     >
 
     <button class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3">
-        {#if $delayed}
+        {#if $submitting}
             <span class="animate-spin">⏳</span>
         {:else}
             Sign in

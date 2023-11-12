@@ -32,8 +32,6 @@
             if (isBlogPublished) {
                 const blogId = (result.data as ActionData)?.blogId as Blog['id'];
 
-                publishBlogDialog.close();
-
                 toast.push('Your blog has been successfully published!');
 
                 await goto(`blogs/${blogId}`);
@@ -140,3 +138,4 @@
         </button>
     </form>
 </dialog>
+<!-- Fix issue where duplicate tags are entered -->

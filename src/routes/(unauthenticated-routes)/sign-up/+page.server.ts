@@ -1,6 +1,6 @@
 import { database } from '../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
 
@@ -26,13 +26,19 @@ const signUp: Action = async ({ request }) => {
 
   const { email, password } = form.data;
 
-  await database.signup({
-    database: 'test',
-    email,
-    namespace: 'test',
-    password,
-    scope: 'user',
-  });
+  try {
+    await database.signup({
+      database: 'test',
+      email,
+      namespace: 'test',
+      password,
+      scope: 'user',
+    });
+  } catch (error_) {
+    throw error(400, {
+      message: (error_ as Error).message,
+    });
+  }
 
   throw redirect(303, '/sign-in');
 };
