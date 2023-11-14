@@ -1,5 +1,5 @@
 import { database } from '../../../../hooks.server';
-import type { Actions, PageServerLoad } from '../../../../../.svelte-kit/types/src/routes';
+import type { Actions, PageServerLoad } from './$types';
 import { getDownloadUrl } from '$lib/storage/get-download-url';
 import { uploadFile } from '$lib/storage/upload-file';
 import type { Blog } from '$lib/types/blog';
@@ -59,43 +59,40 @@ export const actions: Actions = {
 
     const content = form.data.content;
 
-    const [, , , { id: blogId }] = await database.query<
-      [null, null, null, Blog]
-    >(
+    const [, , , blogId] = await database.query<[null, null, null, Blog['id']]>(
       `
             BEGIN TRANSACTION;
 
             LET $now = time::now();
-            
-            LET $blog = (
-                CREATE blog SET
-                    createdAt = $now,
-                    updatedAt = $now,
-                    content = $content,
-                    thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
-                    title = $title,
-                    creator = $userId
-            )[0];
-      
-            FOR $tagName IN $tagNames {
-                LET $existingTag = SELECT * FROM tag WHERE name = $tagName;
 
-                IF $tagId IS NONE { 
-                    $newTag = CREATE tag SET 
+            LET $blogId = (
+                CREATE blog SET
+                createdAt = $now,
+                updatedAt = $now,
+                content = $content,
+                thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
+                title = $title,
+                creator = $userId
+            )[0].id;
+            
+            FOR $tagName IN $tagNames {
+                LET $existingTag = (SELECT * FROM tag WHERE name = $tagName)[0];
+
+                IF $existingTag IS NONE {
+                    LET $newTag = CREATE tag SET 
                         name = $tagName,
                         createdAt = $now,
                         updatedAt = $now;
-                        
-                    RELATE ONLY $blog->blogTag->$newTag;
 
+                    RELATE ONLY $blogId->blogTag->$newTag;
                 } ELSE {
-                    RELATE ONLY $blog->blogTag->$existingTag;
-                };
+                    RELATE ONLY $blogId->blogTag->$existingTag;
+                }
             };
-            
+
             COMMIT TRANSACTION;
-            
-            RETURN $blog;
+
+            RETURN $blogId;
     `,
       {
         content,

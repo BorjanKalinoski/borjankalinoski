@@ -17,3 +17,8 @@ DEFINE FIELD createdAt ON tag
 DEFINE FIELD updatedAt ON tag
     VALUE time::now()
     DEFAULT time::now();
+
+DEFINE INDEX tagName
+    ON tag
+    FIELDS name
+    UNIQUE;
