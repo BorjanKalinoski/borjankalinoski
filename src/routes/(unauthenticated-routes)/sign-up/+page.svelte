@@ -12,6 +12,13 @@
                 extractErrorMessage(event.result.error)
             )
         },
+        onResult: async ({result}) => {
+            const isSignUpSuccessful = result.type === 'success';
+
+            if (isSignUpSuccessful) {
+                await goto('/sign-in')
+            }
+        },
     });
 
 </script>
@@ -27,7 +34,11 @@
         <input class="rounded p-2 mb-3" type="email" name="email" placeholder="john@doe.com" bind:value={$form.email}>
         <input class="rounded p-2 mb-3" type="password" name="password" placeholder="***********" bind:value={$form.password}>
 
-        <button class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3" type="submit">
+        <button
+            type="submit"
+            class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3"
+            disabled={$submitting}
+        >
             {#if $submitting}
                 <span class="animate-spin">🔄</span>
             {:else}
@@ -40,6 +51,7 @@
         <button
             type="button"
             class="bg-white p-2 rounded"
+            disabled={$submitting}
             on:click={async ()=>await goto('/sign-in')}
         >
             Sign In

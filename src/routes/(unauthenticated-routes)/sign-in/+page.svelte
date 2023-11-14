@@ -14,6 +14,13 @@
                 )
             );
         },
+        onResult: async ({result}) => {
+            const isSignedIn = result.type === 'success'
+
+            if (isSignedIn) {
+                await goto(`blogs`);
+            }
+        },
     });
 </script>
 
@@ -38,7 +45,11 @@
             placeholder="***********"
     >
 
-    <button class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3">
+    <button
+        type="submit"
+        class="bg-blue-500 text-white rounded w-[100%] p-2 mb-3"
+        disabled={$submitting}
+    >
         {#if $submitting}
             <span class="animate-spin">⏳</span>
         {:else}
@@ -53,7 +64,8 @@
     <button
         type="button"
         class="bg-white p-2 rounded"
-        on:click={async ()=>await goto('/sign-up')}
+        disabled={$submitting}
+        on:click={async ()=> await goto('/sign-up') }
     >
         Create account
     </button>

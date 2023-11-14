@@ -1,6 +1,6 @@
 import { database } from '../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
 
@@ -39,8 +39,6 @@ const signUp: Action = async ({ request }) => {
       message: (error_ as Error).message,
     });
   }
-
-  throw redirect(303, '/sign-in');
 };
 
 export const actions: Actions = {
