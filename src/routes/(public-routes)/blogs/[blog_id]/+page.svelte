@@ -2,6 +2,7 @@
     /* eslint-disable svelte/no-at-html-tags */
     import Likes from './likes.svelte';
     import Tag from '$lib/components/tag.svelte';
+    import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
     export let data;
 
     let {
@@ -29,7 +30,10 @@
 
         <div class="flex gap-2.5">
             {#each tags as tag}
-                <Tag {tag}/>
+                <Tag
+                    on:click={async () => await filterBlogsByTagNames([tag.name])}
+                    {tag}
+                />
             {/each}
         </div>
     </div>

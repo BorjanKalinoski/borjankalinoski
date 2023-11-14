@@ -1,13 +1,19 @@
 <script lang="ts">
     import dayjs from "dayjs";
     import Tag from '$lib/components/tag.svelte'
+    import type {PageServerData} from "./$types";
+    import BlogFilters from './blog-filters.svelte';
+    import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
 
-    export let data;
-
-    const blogs = data.blogs;
+    export let data: PageServerData;
 </script>
 
-{#each blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt}}
+
+<div class="flex justify-center items-center mb-5">
+    <BlogFilters tags={data.tags} />
+</div>
+
+{#each data.blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt}}
         <div class="max-w-[320px] m-auto mb-6 p-2 border border-gray-300 rounded-lg" >
             <a href="/blogs/{id}">
                 <img
@@ -28,7 +34,10 @@
 
                 <div class="flex gap-x-2.5 gap-y-1.5 flex-wrap">
                     {#each tags as tag}
-                        <Tag {tag}/>
+                        <Tag
+                            on:click={async ()=> await filterBlogsByTagNames([tag.name])}
+                            {tag}
+                        />
                     {/each}
                 </div>
 

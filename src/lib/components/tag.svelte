@@ -5,6 +5,9 @@
 </script>
 
 
-<button class="bg-gray-500 flex px-2 py-1 rounded text-white cursor-pointer text-xs">
+<button
+    on:click
+    class="bg-gray-500 flex px-2 py-1 rounded text-white cursor-pointer text-xs"
+>
     {tag.name}
 </button>
