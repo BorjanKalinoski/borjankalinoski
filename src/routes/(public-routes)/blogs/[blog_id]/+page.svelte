@@ -6,10 +6,24 @@
     import {superForm} from "sveltekit-superforms/client";
     import type {PageServerData} from "./$types";
     import LoadingSpinner from "$lib/components/loading-spinner.svelte";
+    import {toast} from "@zerodevx/svelte-toast";
+    import {extractErrorMessage} from "$lib/utils/extract-error-message";
 
     export let data: PageServerData;
 
-    const {form, enhance, submitting} = superForm(data.form);
+    const {form, enhance, submitting, reset} = superForm(data.form, {
+        onError: (event) => {
+            toast.push(
+                extractErrorMessage(event.result.error)
+            );
+        },
+        onUpdated: ({form}) => {
+            if (form.valid) {
+                reset();
+                toast.push('Your comment was added successfully!');
+            }
+        }
+    });
 
     let {
         blog: {
@@ -63,14 +77,14 @@
 
         <button
             type="submit"
-            class="bg-blue-400 px-2.5 py-1 text-white rounded"
+            class="bg-blue-400 px-2.5 py-2 text-white rounded flex items-center justify-center break-after-auto w-36 h-8"
             disabled={$submitting}
         >
             {#if $submitting}
-                <LoadingSpinner/>
+                <LoadingSpinner />
+            {:else}
+                Add Comment
             {/if}
-
-            Post Comment
         </button>
     </form>
 </div>
