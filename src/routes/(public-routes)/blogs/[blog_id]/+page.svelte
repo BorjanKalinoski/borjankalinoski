@@ -87,4 +87,10 @@
             {/if}
         </button>
     </form>
+
+    {#each data.blog.comments as comment}
+        <div>
+            {comment.comment}
+        </div>
+    {/each}
 </div>

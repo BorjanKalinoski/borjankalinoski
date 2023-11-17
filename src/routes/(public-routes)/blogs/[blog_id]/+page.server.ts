@@ -1,5 +1,6 @@
 import { database } from '../../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
+import type { BlogComment } from '$lib/types/blog-comment';
 import type { BlogWithTags } from '$lib/types/blog-with-tags';
 import { superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ export const load: PageServerLoad = async ({
   const [blog] = await database.query<
     [
       BlogWithTags & {
+        comments: BlogComment[];
         numberOfComments: number;
         numberOfLikes: number;
         userHasLikedBlog: boolean;
@@ -29,7 +31,8 @@ export const load: PageServerLoad = async ({
             (count(id<-likes)) as numberOfLikes, 
             (count(id<-blogComment)) as numberOfComments,
             (id->blogTag.out.*) as tags,
-            (id<-likes.in CONTAINS $userId) as userHasLikedBlog
+            (id<-likes.in CONTAINS $userId) as userHasLikedBlog,
+            (id<-blogComment.*) as comments
         FROM ONLY $blogId;
   `,
     {
