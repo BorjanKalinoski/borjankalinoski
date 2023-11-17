@@ -3,7 +3,12 @@
     import Likes from './likes.svelte';
     import Tag from '$lib/components/tag.svelte';
     import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
-    export let data;
+    import {superForm} from "sveltekit-superforms/client";
+    import type {PageServerData} from "./$types";
+
+    export let data: PageServerData;
+
+    const {form, enhance, submitting} = superForm(data.form);
 
     let {
         blog: {
@@ -39,4 +44,28 @@
     </div>
 
     {@html content}
+
+    <hr>
+
+    <form
+        use:enhance
+        method="post"
+        action="?/add-comment"
+        class="flex flex-col items-end gap-y-4"
+    >
+        <textarea
+            bind:value={$form.comment}
+            class="bg-gray-50 rounded w-full h-16 p-2"
+            placeholder="Write your comment here"
+            name="comment"
+        ></textarea>
+
+        <button
+            type="submit"
+            class="bg-blue-400 px-2.5 py-1 text-white rounded"
+            disabled={$submitting}
+        >
+            Post Comment
+        </button>
+    </form>
 </div>

@@ -1,6 +1,15 @@
 import { database } from '../../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
 import type { BlogWithTags } from '$lib/types/blog-with-tags';
+import { superValidate } from 'sveltekit-superforms/server';
+import { z } from 'zod';
+
+const addCommentFormSchema = z
+  .object({
+    comment: z.string().min(1),
+  })
+  .required()
+  .strict();
 
 export const load: PageServerLoad = async ({
   params: { blog_id: blogId },
@@ -27,8 +36,11 @@ export const load: PageServerLoad = async ({
     },
   );
 
+  const form = await superValidate(addCommentFormSchema);
+
   return {
     blog,
+    form,
   };
 };
 
@@ -57,7 +69,50 @@ const dislikeBlog: Action = async ({
   });
 };
 
+const addComment: Action = async (event) => {
+  const {
+    locals: { currentUser },
+    params: { blog_id: blogId },
+    request,
+  } = event;
+
+  const addCommentFormData = await request.formData();
+
+  const form = await superValidate(addCommentFormData, addCommentFormSchema);
+
+  if (!form.valid) {
+    return {
+      form,
+    };
+  }
+
+  await database.query(
+    `
+     LET $now = time::now();
+     
+     RELATE $userId->blogComment->$blogId
+        CONTENT {
+            in: $userId,
+            out: $blogId,
+            createdAt: $now,
+            updatedAt: $now,
+            comment: $comment,
+        };
+  `,
+    {
+      blogId,
+      comment: form.data.comment,
+      userId: currentUser?.id,
+    },
+  );
+
+  return {
+    form,
+  };
+};
+
 export const actions: Actions = {
+  'add-comment': addComment,
   'dislike-blog': dislikeBlog,
   'like-blog': likeBlog,
 };
