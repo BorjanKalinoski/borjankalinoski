@@ -3,12 +3,12 @@
     import {enhance, applyAction} from '$app/forms'
     import type {SubmitFunction} from "@sveltejs/kit";
     export let userHasLikedBlog: boolean;
-    export let numberOfLikes: number;
+    export let numberOfBlogLikes: number;
 
     const onDislikeBlog: SubmitFunction = () => async ({result}) => {
         if (result.type === 'success') {
             userHasLikedBlog = false;
-            numberOfLikes--;
+            numberOfBlogLikes--;
         }
 
         await applyAction(result);
@@ -17,7 +17,7 @@
     const onLikeBlog: SubmitFunction = () => async ({result}) => {
         if (result.type === 'success') {
             userHasLikedBlog = true;
-            numberOfLikes++;
+            numberOfBlogLikes++;
         }
 
         await applyAction(result);
@@ -26,7 +26,7 @@
 
 </script>
 
-<div class=" w-max flex rounded-[50px] px-1.5 py-0.5 border border-[#ccc] gap-[4px] items-center text-sm">
+<div class="blog-stats">
     {#if userHasLikedBlog}
         <form
                 class="flex"
@@ -57,5 +57,5 @@
         </form>
     {/if}
 
-    <span>{numberOfLikes}</span>
+    <span>{numberOfBlogLikes}</span>
 </div>

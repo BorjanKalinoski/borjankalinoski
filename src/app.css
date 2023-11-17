@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .blog-stats {
+        @apply w-max flex rounded-[50px] px-1.5 py-0.5 border border-[#ccc] gap-[6px] items-center text-sm;
+    }
+}
+
 body {
     height: 100vh;
     max-height: 100vh;

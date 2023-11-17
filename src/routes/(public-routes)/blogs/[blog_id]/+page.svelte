@@ -1,6 +1,7 @@
 <script lang="ts">
     /* eslint-disable svelte/no-at-html-tags */
-    import Likes from './likes.svelte';
+    import NumberOfBlogLikes from './number-of-blog-likes.svelte';
+    import NumberOfBlogComments from './number-of-blog-comments.svelte';
     import Tag from '$lib/components/tag.svelte';
     import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
     import {superForm} from "sveltekit-superforms/client";
@@ -24,16 +25,6 @@
             }
         }
     });
-
-    let {
-        blog: {
-            title,
-            tags,
-            content,
-            numberOfLikes,
-            userHasLikedBlog
-        },
-    } = data;
 </script>
 
 <style>
@@ -42,14 +33,23 @@
 
 <div class="blog">
     <h1 class="font-bold text-2xl">
-        {title}
+        {data.blog.title}
     </h1>
 
     <div class="border-y-[1px] border-[#ccc] py-2.5 flex flex-col gap-2.5">
-        <Likes {userHasLikedBlog} {numberOfLikes} />
+        <div class="flex gap-x-2.5 items-center">
+            <NumberOfBlogLikes
+                userHasLikedBlog={data.blog.userHasLikedBlog}
+                numberOfBlogLikes={data.blog.numberOfLikes}
+            />
+
+            <NumberOfBlogComments
+                numberOfBlogComments={data.blog.numberOfComments}
+            />
+        </div>
 
         <div class="flex gap-2.5">
-            {#each tags as tag}
+            {#each data.blog.tags as tag}
                 <Tag
                     on:click={async () => await filterBlogsByTagNames([tag.name])}
                     {tag}
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    {@html content}
+    {@html data.blog.content}
 
     <hr>
 

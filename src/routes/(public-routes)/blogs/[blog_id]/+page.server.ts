@@ -18,6 +18,7 @@ export const load: PageServerLoad = async ({
   const [blog] = await database.query<
     [
       BlogWithTags & {
+        numberOfComments: number;
         numberOfLikes: number;
         userHasLikedBlog: boolean;
       },
@@ -26,6 +27,7 @@ export const load: PageServerLoad = async ({
     `
         SELECT *,
             (count(id<-likes)) as numberOfLikes, 
+            (count(id<-blogComment)) as numberOfComments,
             (id->blogTag.out.*) as tags,
             (id<-likes.in CONTAINS $userId) as userHasLikedBlog
         FROM ONLY $blogId;
