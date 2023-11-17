@@ -5,6 +5,7 @@
     import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
     import {superForm} from "sveltekit-superforms/client";
     import type {PageServerData} from "./$types";
+    import LoadingSpinner from "$lib/components/loading-spinner.svelte";
 
     export let data: PageServerData;
 
@@ -65,6 +66,10 @@
             class="bg-blue-400 px-2.5 py-1 text-white rounded"
             disabled={$submitting}
         >
+            {#if $submitting}
+                <LoadingSpinner/>
+            {/if}
+
             Post Comment
         </button>
     </form>
