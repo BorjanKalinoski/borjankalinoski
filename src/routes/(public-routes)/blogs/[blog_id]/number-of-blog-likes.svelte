@@ -1,28 +1,8 @@
 <script lang="ts">
     import HeartIcon from "$lib/icons/heart-icon.svelte";
-    import {enhance, applyAction} from '$app/forms'
-    import type {SubmitFunction} from "@sveltejs/kit";
+    import {enhance} from '$app/forms'
     export let userHasLikedBlog: boolean;
     export let numberOfBlogLikes: number;
-
-    const onDislikeBlog: SubmitFunction = () => async ({result}) => {
-        if (result.type === 'success') {
-            userHasLikedBlog = false;
-            numberOfBlogLikes--;
-        }
-
-        await applyAction(result);
-    };
-
-    const onLikeBlog: SubmitFunction = () => async ({result}) => {
-        if (result.type === 'success') {
-            userHasLikedBlog = true;
-            numberOfBlogLikes++;
-        }
-
-        await applyAction(result);
-    };
-
 
 </script>
 
@@ -32,7 +12,7 @@
                 class="flex"
                 action="?/dislike-blog"
                 method="post"
-                use:enhance={onDislikeBlog}
+                use:enhance
         >
 
             <label class="flex">
@@ -47,7 +27,7 @@
             class="flex"
             action="?/like-blog"
             method="post"
-            use:enhance={onLikeBlog}
+            use:enhance
         >
             <label class="flex">
                 <input type="submit" class="hidden">

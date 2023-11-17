@@ -77,13 +77,13 @@
 
         <button
             type="submit"
-            class="bg-blue-400 px-2.5 py-2 text-white rounded flex items-center justify-center break-after-auto w-36 h-8"
+            class="bg-blue-400 px-2.5 py-2 text-white rounded flex items-center justify-center break-after-auto w-28 h-8"
             disabled={$submitting}
         >
             {#if $submitting}
                 <LoadingSpinner />
             {:else}
-                Add Comment
+                Comment
             {/if}
         </button>
     </form>
