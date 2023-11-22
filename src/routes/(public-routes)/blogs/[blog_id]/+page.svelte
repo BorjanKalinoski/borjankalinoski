@@ -9,7 +9,7 @@
     import LoadingSpinner from "$lib/components/loading-spinner.svelte";
     import {toast} from "@zerodevx/svelte-toast";
     import {extractErrorMessage} from "$lib/utils/extract-error-message";
-
+    import BlogComment from "$lib/components/blog-comment.svelte";
     export let data: PageServerData;
 
     const {form, enhance, submitting, reset} = superForm(data.form, {
@@ -32,7 +32,7 @@
 </style>
 
 <div class="blog">
-    <h1 class="font-bold text-2xl">
+    <h1 class="font-bold text-2xl py-2">
         {data.blog.title}
     </h1>
 
@@ -58,21 +58,22 @@
         </div>
     </div>
 
-    {@html data.blog.content}
+    <div class="py-1.5 mb-5 border-b-[1px] border-[#ccc]">
+        {@html data.blog.content}
+    </div>
 
-    <hr>
 
     <form
         use:enhance
         method="post"
         action="?/add-comment"
-        class="flex flex-col items-end gap-y-4"
+        class="flex flex-col items-end gap-y-4 mb-5"
     >
         <textarea
-            bind:value={$form.comment}
-            class="bg-gray-50 rounded w-full h-16 p-2"
-            placeholder="Write your comment here"
-            name="comment"
+            bind:value={$form.content}
+            class="outline-0 bg-gray-50 rounded w-full h-16 p-2"
+            placeholder="Write your comment"
+            name="content"
         ></textarea>
 
         <button
@@ -89,8 +90,6 @@
     </form>
 
     {#each data.blog.comments as comment}
-        <div>
-            {comment.comment}
-        </div>
+        <BlogComment comment={comment} />
     {/each}
 </div>

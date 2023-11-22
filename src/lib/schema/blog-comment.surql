@@ -32,7 +32,7 @@ DEFINE FIELD replies.*
     ON blogComment
     TYPE record<blogComment>;
 
-DEFINE FIELD comment
+DEFINE FIELD content
     ON blogComment
     TYPE string
     ASSERT string::len($value) > 0;

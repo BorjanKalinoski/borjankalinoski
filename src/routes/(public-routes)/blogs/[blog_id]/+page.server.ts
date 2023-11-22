@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 const addCommentFormSchema = z
   .object({
-    comment: z.string().min(1),
+    content: z.string().min(1),
   })
   .required()
   .strict();
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({
             (count(id<-blogComment)) as numberOfComments,
             (id->blogTag.out.*) as tags,
             (id<-likes.in CONTAINS $userId) as userHasLikedBlog,
-            (id<-blogComment.*) as comments
+            (SELECT *, in.* as author from id<-blogComment ORDER BY createdAt DESC) as comments
         FROM ONLY $blogId;
   `,
     {
@@ -101,12 +101,12 @@ const addComment: Action = async (event) => {
             out: $blogId,
             createdAt: $now,
             updatedAt: $now,
-            comment: $comment,
+            content: $content,
         };
   `,
     {
       blogId,
-      comment: form.data.comment,
+      content: form.data.content,
       userId: currentUser?.id,
     },
   );
