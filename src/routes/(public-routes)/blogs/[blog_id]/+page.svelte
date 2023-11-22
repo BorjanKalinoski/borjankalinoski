@@ -12,7 +12,12 @@
     import BlogComment from "$lib/components/blog-comment.svelte";
     export let data: PageServerData;
 
-    const {form, enhance, submitting, reset} = superForm(data.form, {
+    const {
+        form: addCommentForm,
+        enhance,
+        submitting,
+        reset,
+    } = superForm(data.addCommentForm, {
         onError: (event) => {
             toast.push(
                 extractErrorMessage(event.result.error)
@@ -70,7 +75,7 @@
         class="flex flex-col items-end gap-y-4 mb-5"
     >
         <textarea
-            bind:value={$form.content}
+            bind:value={$addCommentForm.content}
             class="outline-0 bg-gray-50 rounded w-full h-16 p-2"
             placeholder="Write your comment"
             name="content"

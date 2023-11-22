@@ -34,7 +34,11 @@
 
 
     <div class="flex items-center gap-x-2.5 mb-2">
-        <NumberOfCommentLikes />
+        <NumberOfCommentLikes
+            commentId={comment.id}
+            numberOfLikes={comment.numberOfLikes}
+            userHasLikedComment={comment.userHasLikedComment}
+        />
 
         <button
             on:click={onReplyButtonClick}
@@ -43,6 +47,9 @@
         </button>
     </div>
 
-    <ReplyToCommentForm {isReplyingToComment} />
+    <ReplyToCommentForm
+        {isReplyingToComment}
+        commentId={comment.id}
+    />
 </div>
 

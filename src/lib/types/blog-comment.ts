@@ -7,6 +7,8 @@ export type BlogComment = {
   createdAt: string;
   id: `blogComment:${string}`;
   in: User['id'];
+  numberOfLikes: number;
+  userHasLikedComment: boolean;
   out: Blog['id'];
   replies: BlogComment[];
   updatedAt: string;
