@@ -2,11 +2,12 @@
     import {superForm} from "sveltekit-superforms/client";
     import {page} from "$app/stores";
     import type {BlogComment} from "$lib/types/blog-comment";
+    import LoadingSpinner from "$lib/components/loading-spinner.svelte";
 
     export let isReplyingToComment: boolean = false;
     export let commentId: BlogComment['id'];
 
-    const {form, enhance} = superForm($page.data.replyToCommentForm, {
+    const {form, enhance, submitting} = superForm($page.data.replyToCommentForm, {
         id: commentId
     });
 
@@ -36,14 +37,14 @@
     <button
             type="submit"
             class="bg-blue-400 px-2.5 py-2 text-white rounded flex items-center justify-center break-after-auto w-28 h-8"
-
+            disabled={$submitting}
     >
-        Reply
+        {#if $submitting}
+            <LoadingSpinner />
+        {:else}
+            Reply
+        {/if}
     </button>
 </form>
 
-<!--{#if $submitting}-->
-<!--        disabled={$submitting}-->
-<!--    <LoadingSpinner />-->
-<!--{:else}-->
-<!--{/if}-->
+

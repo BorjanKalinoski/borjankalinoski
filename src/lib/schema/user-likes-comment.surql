@@ -11,7 +11,7 @@ DEFINE FIELD in
 
 DEFINE FIELD out
     ON user_likes_comment
-    TYPE record<blogComment>;
+    TYPE record<user_comments_on_blog>;
 
 DEFINE FIELD createdAt
     ON user_likes_comment

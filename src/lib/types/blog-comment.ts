@@ -5,11 +5,11 @@ export type BlogComment = {
   author: User;
   content: string;
   createdAt: string;
-  id: `blogComment:${string}`;
+  id: `user_comments_on_blog:${string}`;
   in: User['id'];
   numberOfLikes: number;
-  userHasLikedComment: boolean;
+  numberOfReplies: number;
   out: Blog['id'];
-  replies: BlogComment[];
   updatedAt: string;
+  userHasLikedComment: boolean;
 };

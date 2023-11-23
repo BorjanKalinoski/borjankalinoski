@@ -38,17 +38,19 @@ export const load: PageServerLoad = async ({
     `
         SELECT *,
             (count(id<-likes)) as numberOfLikes, 
-            (count(id<-blogComment)) as numberOfComments,
+            (count(id<-user_comments_on_blog)) as numberOfComments,
             (id->blogTag.out.*) as tags,
             (id<-likes.in CONTAINS $userId) as userHasLikedBlog,
                (SELECT
                     *, 
                     count(id<-user_likes_comment.*) as numberOfLikes,
                     in.* as author,
-                    (<-user_likes_comment.in CONTAINS $userId) as userHasLikedComment 
-                FROM id<-blogComment ORDER BY createdAt DESC
-               ) as comments
-                                                                                                                            
+                    (<-user_likes_comment.in CONTAINS $userId) as userHasLikedComment,
+                    count(id<-comment_replies_to) as numberOfReplies
+                FROM id<-user_comments_on_blog
+                WHERE !id->comment_replies_to
+                ORDER BY createdAt DESC 
+               ) as comments                                                                                                
         FROM ONLY $blogId;
   `,
     {
@@ -114,7 +116,7 @@ const addComment: Action = async (event) => {
     `
      LET $now = time::now();
      
-     RELATE $userId->blogComment->$blogId
+     RELATE $userId->user_comments_on_blog->$blogId
         CONTENT {
             in: $userId,
             out: $blogId,
@@ -185,10 +187,53 @@ const dislikeComment: Action = async ({ request, locals: { currentUser } }) => {
   );
 };
 
+const replyToComment: Action = async (event) => {
+  const {
+    locals: { currentUser },
+    params: { blog_id: blogId },
+    request,
+  } = event;
+
+  const replyToCommentFormData = await request.formData();
+
+  const replyToCommentForm = await superValidate(
+    replyToCommentFormData,
+    replyToCommentFormSchema,
+  );
+
+  await database.query(
+    `
+    LET $now = time::now();
+    
+    LET $newComment = RELATE ONLY $userId->user_comments_on_blog->$blogId
+        CONTENT {
+            in: $userId,
+            out: $blogId,
+            createdAt: $now,
+            updatedAt: $now,
+            content: $content,
+        };
+        
+    RELATE ONLY $newComment->comment_replies_to->$commentId;
+    `,
+    {
+      blogId,
+      commentId: replyToCommentForm.data.commentId,
+      content: replyToCommentForm.data.content,
+      userId: currentUser?.id,
+    },
+  );
+
+  return {
+    replyToCommentForm,
+  };
+};
+
 export const actions: Actions = {
   'add-comment': addComment,
   'dislike-blog': dislikeBlog,
   'dislike-comment': dislikeComment,
   'like-blog': likeBlog,
   'like-comment': likeComment,
+  'reply-to-comment': replyToComment,
 };

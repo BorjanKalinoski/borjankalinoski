@@ -14,7 +14,7 @@
 </script>
 
 <div
-    class="border-solid border-2 mb-2 flex p-2.5 gap-x-2.5 flex-col rounded"
+    class="border-solid border-2 mb-2 flex p-2.5 gap-x-2.5 gap-y-2.5 flex-col rounded"
 >
     <div class="flex gap-x-2 items-center">
         <div class="avatar w-[20px] h-[20px] rounded-[50%] bg-gray-500"></div>
@@ -33,7 +33,7 @@
     </div>
 
 
-    <div class="flex items-center gap-x-2.5 mb-2">
+    <div class="flex items-center gap-x-2.5">
         <NumberOfCommentLikes
             commentId={comment.id}
             numberOfLikes={comment.numberOfLikes}
@@ -47,9 +47,17 @@
         </button>
     </div>
 
+
+    {#if (comment.numberOfReplies !== 0)}
+        <button class="text-blue-400 self-start">
+            View {comment.numberOfReplies} {comment.numberOfReplies === 1 ? 'reply' : 'replies'}
+        </button>
+    {/if}
+
     <ReplyToCommentForm
         {isReplyingToComment}
         commentId={comment.id}
     />
+
 </div>
 

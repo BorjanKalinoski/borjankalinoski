@@ -1,4 +1,4 @@
-DEFINE TABLE blogComment SCHEMAFULL
+DEFINE TABLE user_comments_on_blog SCHEMAFULL
     PERMISSIONS
         FOR create WHERE $scope = 'user'
         FOR select FULL
@@ -6,33 +6,24 @@ DEFINE TABLE blogComment SCHEMAFULL
         FOR update WHERE in = $auth.id;
 
 DEFINE FIELD in
-    ON blogComment
+    ON user_comments_on_blog
     TYPE record<user>;
 
 DEFINE FIELD out
-    ON blogComment
+    ON user_comments_on_blog
     TYPE record<blog>;
 
 DEFINE FIELD createdAt
-    ON blogComment
+    ON user_comments_on_blog
     VALUE $before OR time::now()
     DEFAULT time::now();
 
 DEFINE FIELD updatedAt
-    ON blogComment
+    ON user_comments_on_blog
     VALUE time::now()
     DEFAULT time::now();
 
-DEFINE FIELD replies
-    ON blogComment
-    TYPE array
-    DEFAULT [];
-
-DEFINE FIELD replies.*
-    ON blogComment
-    TYPE record<blogComment>;
-
 DEFINE FIELD content
-    ON blogComment
+    ON user_comments_on_blog
     TYPE string
     ASSERT string::len($value) > 0;
