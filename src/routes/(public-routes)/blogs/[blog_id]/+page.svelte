@@ -10,7 +10,8 @@
     import {toast} from "@zerodevx/svelte-toast";
     import {extractErrorMessage} from "$lib/utils/extract-error-message";
     import BlogComment from "$lib/components/blog-comment.svelte";
-    import {createQuery} from "@tanstack/svelte-query";
+    import { useCommentsQuery } from "$lib/comments/queries/use-comments-query";
+
     export let data: PageServerData;
 
     const {
@@ -32,18 +33,7 @@
         }
     });
 
-    const comments = createQuery({
-        queryKey: ['comments'],
-        queryFn: async () => {
-            const response = await fetch(`?/blog-comments/${data.blog.id}`);
-            return await response.json();
-        },
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-    });
+    const commentsQuery = useCommentsQuery();
 </script>
 
 <style>
@@ -108,8 +98,8 @@
         </button>
     </form>
 
-    {#if $comments.data}
-        {#each $comments.data as comment}
+    {#if $commentsQuery.data}
+        {#each $commentsQuery.data as comment}
             <BlogComment comment={comment} />
         {/each}
     {:else}

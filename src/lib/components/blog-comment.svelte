@@ -3,11 +3,10 @@
     import type {BlogComment as BlogCommentType} from "$lib/types/blog-comment";
     import NumberOfCommentLikes from "$lib/components/number-of-comment-likes.svelte";
     import ReplyToCommentForm from "$lib/components/reply-to-comment-form.svelte";
-    import {createQuery} from "@tanstack/svelte-query";
-    import {getRepliesByCommentId} from "$lib/api/comments/get-replies-by-comment-id";
-    import {getCommentByCommentId} from "$lib/api/comments/get-comment-by-comment-id";
     import {createCommentStore} from "$lib/stores/comment-store";
     import LoadingSpinner from "$lib/components/loading-spinner.svelte";
+    import {useCommentQuery} from "$lib/comments/queries/use-comment-query";
+    import {useCommentReplies} from "$lib/comments/queries/use-comment-replies";
 
 
     export let comment: BlogCommentType;
@@ -15,29 +14,17 @@
 
     const commentStore = createCommentStore(comment.id);
 
-    const commentData = createQuery({
-        queryKey: ['comments', comment?.id],
+    const commentData = useCommentQuery({
+        commentId: comment.id,
         initialData: comment,
-        queryFn: async () => {
-            return await getCommentByCommentId(comment?.id)
-        },
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
     });
 
-    let repliesQuery;
+    let repliesQuery: ReturnType<typeof useCommentReplies>;
 
     $: {
-        repliesQuery = createQuery({
-            queryKey: ['comments', comment?.id, 'replies'],
+        repliesQuery = useCommentReplies({
             enabled: $commentStore.displayCommentReplies,
-            initialData: [],
-            queryFn: async () => {
-                return await getRepliesByCommentId(comment?.id)
-            },
+            commentId: comment.id
         });
     }
 
@@ -110,10 +97,3 @@
 
     {/if}
 {/if}
-<!--
-1. List replies only when view-1-reply is clicked [DoNE]
-2. Add loading UI [done]
-3. Display reply once it is added [DONE]
-4. Add a toast message [done]
-5. Refactor code
--->

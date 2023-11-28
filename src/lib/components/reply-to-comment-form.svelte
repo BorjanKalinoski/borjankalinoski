@@ -3,29 +3,19 @@
     import {page} from "$app/stores";
     import type {BlogComment} from "$lib/types/blog-comment";
     import LoadingSpinner from "$lib/components/loading-spinner.svelte";
-    import {createMutation, useQueryClient} from "@tanstack/svelte-query";
+    import {useQueryClient} from "@tanstack/svelte-query";
     import {toast} from "@zerodevx/svelte-toast";
+    import {useReplyToCommentMutation} from "$lib/comments/mutations/use-reply-to-comment-mutation";
 
     export let isReplyingToComment: boolean;
     export let commentId: BlogComment['id'];
 
     const queryClient = useQueryClient();
 
-    let replyToCommentMutation;
-
-    $:{
-
-        replyToCommentMutation = createMutation({
-            mutationFn: async (body: any) => {
-                return await fetch(`/api/comments/${commentId}/reply`, {
-                    method: 'POST',
-                    body: JSON.stringify(body),
-                });
-            },
-            onSuccess: (data) => {
+    $: {
+        replyToCommentMutation = useReplyToCommentMutation({
+            onSuccess: () => {
                 toast.push('Your comment was added successfully!');
-
-                isReplyingToComment = false;
 
                 void queryClient.invalidateQueries({
                     queryKey: ['comments', commentId],
@@ -33,6 +23,8 @@
             }
         });
     }
+
+    let replyToCommentMutation: ReturnType<typeof useReplyToCommentMutation>;
 
 
     const {form, enhance, submitting} = superForm($page.data.replyToCommentForm, {
@@ -42,9 +34,9 @@
         resetForm: true,
         onSubmit: ({formData}) => {
             $replyToCommentMutation.mutate({
-                content: formData.get('content'),
+                blogId: $page.params.blog_id,
                 commentId,
-                blogId: $page.params.blog_id
+                content: formData.get('content') as string
             });
 
         }

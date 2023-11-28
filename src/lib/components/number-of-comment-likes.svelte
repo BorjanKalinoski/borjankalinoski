@@ -1,86 +1,68 @@
 <script lang="ts">
     import HeartIcon from "$lib/icons/heart-icon.svelte";
-    import {createMutation, createQuery, useQueryClient} from "@tanstack/svelte-query";
+    import {useQueryClient} from "@tanstack/svelte-query";
+    import {useCommentQuery} from "$lib/comments/queries/use-comment-query";
+    import {useDislikeCommentMutation} from "$lib/comments/mutations/use-dislike-comment-mutation";
+    import type {BlogComment} from "$lib/types/blog-comment";
+    import {useLikeCommentMutation} from "$lib/comments/mutations/use-like-comment-mutation";
 
-    export let commentId: string;
+    export let commentId: BlogComment['id'];
 
-    const commentQuery = createQuery({
-        queryKey: ['comments', commentId],
-        queryFn: async () => {
-            const res = await fetch(`/api/comments/${commentId}`);
-            return await res.json();
-        },
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-    });
-
+    const commentQuery = useCommentQuery({
+        commentId,
+    })
 
     const queryClient = useQueryClient();
 
-    const dislikeCommentMutation = createMutation({
-        mutationFn: async () => {
-            return await fetch(`/api/comments/${commentId}/dislike`, {
-                method: 'POST',
-            });
-        },
+    const dislikeCommentMutation = useDislikeCommentMutation({
         onSuccess: () => {
-            void queryClient.setQueryData(['comments', commentId], (old) => {
+            void queryClient.setQueryData(['comments', commentId], (comment: BlogComment) => {
                 return {
-                    ...old,
-                    numberOfLikes: old.numberOfLikes - 1,
+                    ...comment,
+                    numberOfLikes: comment.numberOfLikes - 1,
                     userHasLikedComment: false,
-                }
+                } satisfies BlogComment;
             });
         }
-    });
+    })
 
-    const likeCommentMutation = createMutation({
-        mutationFn: async () => {
-            return await fetch(`/api/comments/${commentId}/like`, {
-                method: 'POST',
-            });
-        },
+    const likeCommentMutation = useLikeCommentMutation({
         onSuccess: () => {
-            void queryClient.setQueryData(['comments', commentId], (old) => {
-
+            void queryClient.setQueryData(['comments', commentId], (comment: BlogComment) => {
                 return {
-                    ...old,
-                    numberOfLikes: old.numberOfLikes + 1,
+                    ...comment,
+                    numberOfLikes: comment.numberOfLikes + 1,
                     userHasLikedComment: true,
-                }
+                } satisfies BlogComment
             });
         }
     });
-
 </script>
 
 <div class="blog-stats">
-    {#if ($commentQuery.data.userHasLikedComment)}
+    {#if ($commentQuery.data?.userHasLikedComment)}
         <HeartIcon
             class="cursor-pointer [&>path]:fill-rose-600 fill-rose-600 stroke-rose-600"
             width={16}
             height={16}
-            on:click={()=>{
-                $dislikeCommentMutation.mutate()
+            on:click={() => {
+                $dislikeCommentMutation.mutate(commentId)
             }}
         />
     {/if}
 
-    {#if (!$commentQuery.data.userHasLikedComment)}
+    {#if (!$commentQuery.data?.userHasLikedComment)}
         <HeartIcon
             class="[&>path]:fill-white stroke-black cursor-pointer"
             width={16}
             height={16}
             on:click={() => {
-                $likeCommentMutation.mutate()
+                $likeCommentMutation.mutate(commentId)
             }}
         />
     {/if}
 
     <span class="text-xs">
-        {$commentQuery.data.numberOfLikes}
+        {$commentQuery.data?.numberOfLikes}
     </span>
 </div>
