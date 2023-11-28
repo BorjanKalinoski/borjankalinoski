@@ -10,6 +10,7 @@
     import {toast} from "@zerodevx/svelte-toast";
     import {extractErrorMessage} from "$lib/utils/extract-error-message";
     import BlogComment from "$lib/components/blog-comment.svelte";
+    import {createQuery} from "@tanstack/svelte-query";
     export let data: PageServerData;
 
     const {
@@ -29,6 +30,19 @@
                 toast.push('Your comment was added successfully!');
             }
         }
+    });
+
+    const comments = createQuery({
+        queryKey: ['comments'],
+        queryFn: async () => {
+            const response = await fetch(`?/blog-comments/${data.blog.id}`);
+            return await response.json();
+        },
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
     });
 </script>
 
@@ -94,7 +108,12 @@
         </button>
     </form>
 
-    {#each data.blog.comments as comment}
-        <BlogComment comment={comment} />
-    {/each}
+    {#if $comments.data}
+        {#each $comments.data as comment}
+            <BlogComment comment={comment} />
+        {/each}
+    {:else}
+        <LoadingSpinner />
+    {/if}
+
 </div>

@@ -1,6 +1,5 @@
 import { database } from '../../../../hooks.server';
 import type { Action, Actions, PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
 import type { BlogComment } from '$lib/types/blog-comment';
 import type { BlogWithTags } from '$lib/types/blog-with-tags';
 import { superValidate } from 'sveltekit-superforms/server';
@@ -137,103 +136,8 @@ const addComment: Action = async (event) => {
   };
 };
 
-const likeComment: Action = async ({ request, locals: { currentUser } }) => {
-  const formData = await request.formData();
-
-  const commentId = formData.get('commentId');
-
-  if (!commentId) {
-    throw error(400, {
-      message: 'An error occurred while liking this comment',
-    });
-  }
-
-  await database.query(
-    `
-        LET $now = time::now();
-
-        RELATE ONLY $userId->user_likes_comment->$commentId
-            CONTENT {
-                in: $userId,
-                out: $commentId,
-                createdAt: $now,
-                updatedAt: $now
-            };
-  `,
-    {
-      commentId,
-      userId: currentUser?.id,
-    },
-  );
-};
-
-const dislikeComment: Action = async ({ request, locals: { currentUser } }) => {
-  const formData = await request.formData();
-
-  const commentId = formData.get('commentId');
-
-  if (!commentId) {
-    throw error(400, {
-      message: 'An error occurred while liking this comment',
-    });
-  }
-
-  await database.query(
-    `DELETE $userId->user_likes_comment WHERE out = $commentId`,
-    {
-      commentId,
-      userId: currentUser?.id,
-    },
-  );
-};
-
-const replyToComment: Action = async (event) => {
-  const {
-    locals: { currentUser },
-    params: { blog_id: blogId },
-    request,
-  } = event;
-
-  const replyToCommentFormData = await request.formData();
-
-  const replyToCommentForm = await superValidate(
-    replyToCommentFormData,
-    replyToCommentFormSchema,
-  );
-
-  await database.query(
-    `
-    LET $now = time::now();
-    
-    LET $newComment = RELATE ONLY $userId->user_comments_on_blog->$blogId
-        CONTENT {
-            in: $userId,
-            out: $blogId,
-            createdAt: $now,
-            updatedAt: $now,
-            content: $content,
-        };
-        
-    RELATE ONLY $newComment->comment_replies_to->$commentId;
-    `,
-    {
-      blogId,
-      commentId: replyToCommentForm.data.commentId,
-      content: replyToCommentForm.data.content,
-      userId: currentUser?.id,
-    },
-  );
-
-  return {
-    replyToCommentForm,
-  };
-};
-
 export const actions: Actions = {
   'add-comment': addComment,
   'dislike-blog': dislikeBlog,
-  'dislike-comment': dislikeComment,
   'like-blog': likeBlog,
-  'like-comment': likeComment,
-  'reply-to-comment': replyToComment,
 };
