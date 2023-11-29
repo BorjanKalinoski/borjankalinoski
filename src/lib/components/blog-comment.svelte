@@ -12,6 +12,8 @@
 
     export let comment: BlogCommentType;
 
+    const blogId = $page.params.blog_id as Blog['id'];
+
 
     let commentStore: ReturnType<typeof createCommentStore>;
 
@@ -22,7 +24,7 @@
     $: commentQuery = useCommentQuery({
         commentId: comment.id,
         initialData: comment,
-        blogId: $page.params.blog_id as Blog['id']
+        blogId
     });
 
     let repliesQuery: ReturnType<typeof useCommentReplies>;
@@ -30,7 +32,7 @@
     $: repliesQuery = useCommentReplies({
         enabled: $commentStore.displayCommentReplies,
         commentId: comment.id,
-        blogId: $page.params.blog_id as Blog['id'],
+        blogId
     });
 
 </script>
@@ -74,10 +76,19 @@
         />
 
         {#if ($commentQuery.data.numberOfReplies !== 0)}
-            <button class="text-blue-400 self-start" on:click={()=>{
-                commentStore.onDisplayCommentReplies();
-            }}>
-                View {$commentQuery.data.numberOfReplies} {$commentQuery.data.numberOfReplies === 1 ? 'reply' : 'replies'}
+            <button
+                class="text-blue-400 self-start"
+                on:click={$commentStore.displayCommentReplies ? commentStore.onHideCommentReplies : commentStore.onDisplayCommentReplies}
+            >
+                {
+                    $commentStore.displayCommentReplies
+                        ? 'Hide'
+                        : 'View'
+                }
+
+                {$commentQuery.data.numberOfReplies}
+
+                {$commentQuery.data.numberOfReplies === 1 ? 'reply' : 'replies'}
             </button>
         {/if}
 
