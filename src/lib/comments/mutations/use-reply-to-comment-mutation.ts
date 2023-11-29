@@ -1,32 +1,18 @@
-import { createMutation, type MutateOptions } from '@tanstack/svelte-query';
+import { createMutation } from '@tanstack/svelte-query';
 import { replyToCommentByCommentId } from '$lib/comments/api/reply-to-comment-by-comment-id';
 import type { BlogComment } from '$lib/types/blog-comment';
 
 export function useReplyToCommentMutation({
   onSuccess,
 }: {
-  onSuccess: MutateOptions<
-    unknown,
-    unknown,
-    {
-      blogId: string;
-      commentId: BlogComment['id'];
-      content: string;
-    }
-  >['onSuccess'];
+  onSuccess: () => void;
 }) {
-  return createMutation<
-    unknown,
-    unknown,
-    {
+  return createMutation({
+    mutationFn: async (payload: {
       blogId: string;
       commentId: BlogComment['id'];
       content: string;
-    }
-  >({
-    mutationFn: async (payload) => {
-      await replyToCommentByCommentId(payload);
-    },
+    }) => await replyToCommentByCommentId(payload),
     onSuccess,
   });
 }

@@ -1,6 +1,10 @@
 import { database } from '../../../../../hooks.server';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export async function POST({ params: { commentId }, locals: { currentUser } }) {
+export async function POST({
+  params: { commentId },
+  locals: { currentUser },
+}: RequestEvent) {
   await database.query(
     `
         LET $now = time::now();

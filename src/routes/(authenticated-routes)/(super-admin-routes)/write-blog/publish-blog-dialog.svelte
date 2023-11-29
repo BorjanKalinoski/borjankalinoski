@@ -32,7 +32,7 @@
             if (isBlogPublished) {
                 const blogId = (result.data as ActionData)?.blogId as Blog['id'];
 
-                toast.push('Your blog has been successfully published!');
+                toast.push('Your blogs has been successfully published!');
 
                 await goto(`blogs/${blogId}`);
             }

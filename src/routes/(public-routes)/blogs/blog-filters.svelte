@@ -11,11 +11,9 @@
             ?.filter(Boolean)
         ?? [];
 
-    $: {
-        selectedTags = Object.fromEntries($page.url.searchParams)?.tags
-            ?.split?.(',')
-            ?.filter(Boolean) ?? [];
-    }
+    $: selectedTags = Object.fromEntries($page.url.searchParams)?.tags
+        ?.split?.(',')
+        ?.filter(Boolean) ?? [];
 
     const onChangeTagsFilter = async (event: CustomEvent<DispatchEvents['change']>) => {
         await filterBlogsByTagNames(

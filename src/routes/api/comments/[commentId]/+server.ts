@@ -1,11 +1,10 @@
 import { database } from '../../../../hooks.server';
+import type { RequestEvent } from '@sveltejs/kit';
 
 export async function GET({
   params: { commentId },
-  locals: {
-    currentUser: { id: userId },
-  },
-}) {
+  locals: { currentUser },
+}: RequestEvent) {
   const [comment] = await database.query(
     `
         SELECT 
@@ -18,11 +17,9 @@ export async function GET({
     `,
     {
       commentId,
-      userId,
+      userId: currentUser?.id,
     },
   );
-
-  console.log(comment);
 
   return Response.json(comment);
 }

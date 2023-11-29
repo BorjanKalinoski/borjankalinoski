@@ -1,19 +1,21 @@
 import { createQuery } from '@tanstack/svelte-query';
 import { getRepliesByCommentId } from '$lib/comments/api/get-replies-by-comment-id';
+import type { Blog } from '$lib/types/blog';
+import type { BlogComment } from '$lib/types/blog-comment';
 
 export function useCommentReplies({
   commentId,
   enabled,
+  blogId,
 }: {
-  commentId: string;
+  blogId: Blog['id'];
+  commentId: BlogComment['id'];
   enabled: boolean;
 }) {
   return createQuery({
     enabled,
     initialData: [],
-    queryFn: async () => {
-      return await getRepliesByCommentId(commentId);
-    },
-    queryKey: ['comments', commentId, 'replies'],
+    queryFn: async () => await getRepliesByCommentId(commentId),
+    queryKey: ['blog', blogId, 'comments', commentId, 'replies'],
   });
 }

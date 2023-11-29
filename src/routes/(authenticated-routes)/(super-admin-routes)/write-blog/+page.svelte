@@ -89,7 +89,7 @@
 
             const storageReference = await uploadFile({
                 file,
-                location: '/temporary/new-blog-post',
+                location: '/temporary/new-blogs-post',
             });
 
             const downloadUrl = await getDownloadUrl(storageReference);

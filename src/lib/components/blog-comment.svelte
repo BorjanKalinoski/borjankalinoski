@@ -7,30 +7,35 @@
     import LoadingSpinner from "$lib/components/loading-spinner.svelte";
     import {useCommentQuery} from "$lib/comments/queries/use-comment-query";
     import {useCommentReplies} from "$lib/comments/queries/use-comment-replies";
-
+    import {page} from "$app/stores";
+    import type {Blog} from "$lib/types/blog";
 
     export let comment: BlogCommentType;
 
 
-    const commentStore = createCommentStore(comment.id);
+    let commentStore: ReturnType<typeof createCommentStore>;
 
-    const commentData = useCommentQuery({
+    $: commentStore = createCommentStore(comment.id);
+
+    let commentQuery: ReturnType<typeof useCommentQuery>;
+
+    $: commentQuery = useCommentQuery({
         commentId: comment.id,
         initialData: comment,
+        blogId: $page.params.blog_id as Blog['id']
     });
 
     let repliesQuery: ReturnType<typeof useCommentReplies>;
 
-    $: {
-        repliesQuery = useCommentReplies({
-            enabled: $commentStore.displayCommentReplies,
-            commentId: comment.id
-        });
-    }
+    $: repliesQuery = useCommentReplies({
+        enabled: $commentStore.displayCommentReplies,
+        commentId: comment.id,
+        blogId: $page.params.blog_id as Blog['id'],
+    });
 
 </script>
 
-{#if $commentData.data?.id !== undefined}
+{#if $commentQuery.data?.id !== undefined}
     <div
             class="border-solid border-2 mb-2 flex p-2.5 gap-x-2.5 gap-y-2.5 flex-col rounded"
     >
@@ -38,22 +43,22 @@
             <div class="avatar w-[20px] h-[20px] rounded-[50%] bg-gray-500"></div>
 
             <div class="text-xs">
-                {$commentData.data.author.email}
+                {$commentQuery.data.author.email}
             </div>
 
             <div class="text-xs text-[#656D76]">
-                {dayjs($commentData.data.createdAt).format('D MMM, YYYY')}
+                {dayjs($commentQuery.data.createdAt).format('D MMM, YYYY')}
             </div>
         </div>
 
         <div class="text-base my-3.5">
-            {$commentData.data.content}
+            {$commentQuery.data.content}
         </div>
 
 
         <div class="flex items-center gap-x-2.5">
             <NumberOfCommentLikes
-                commentId={$commentData.data.id}
+                commentId={$commentQuery.data.id}
             />
 
             <button
@@ -65,14 +70,14 @@
 
         <ReplyToCommentForm
                 isReplyingToComment={$commentStore.displayReplyCommentForm}
-                commentId={$commentData.data.id}
+                commentId={$commentQuery.data.id}
         />
 
-        {#if ($commentData.data.numberOfReplies !== 0)}
+        {#if ($commentQuery.data.numberOfReplies !== 0)}
             <button class="text-blue-400 self-start" on:click={()=>{
                 commentStore.onDisplayCommentReplies();
             }}>
-                View {$commentData.data.numberOfReplies} {$commentData.data.numberOfReplies === 1 ? 'reply' : 'replies'}
+                View {$commentQuery.data.numberOfReplies} {$commentQuery.data.numberOfReplies === 1 ? 'reply' : 'replies'}
             </button>
         {/if}
 
@@ -80,7 +85,7 @@
 
     {#if ($commentStore.displayCommentReplies)}
         <div class="pl-5">
-            {#if $repliesQuery.isFetching}
+            {#if $repliesQuery.isLoading}
                 <div class="flex gap-x-2.5">
                     <LoadingSpinner class="mb-2"/>
 

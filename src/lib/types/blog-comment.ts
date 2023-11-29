@@ -11,5 +11,5 @@ export type BlogComment = {
   numberOfReplies: number;
   out: Blog['id'];
   updatedAt: string;
-  userHasLikedComment: boolean;
+  // userHasLikedComment: boolean;
 };

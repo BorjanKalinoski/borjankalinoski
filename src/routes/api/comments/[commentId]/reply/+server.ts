@@ -1,17 +1,14 @@
 import { database } from '../../../../../hooks.server';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export async function POST(event) {
-  const {
-    locals: {
-      currentUser: { id: userId },
-    },
-    params: { commentId },
-    request,
-  } = event;
-
+export async function POST({
+  locals: { currentUser },
+  params: { commentId },
+  request,
+}: RequestEvent) {
   const { blogId, content } = await request.json();
 
-  const k = await database.query(
+  await database.query(
     `
     LET $now = time::now();
 
@@ -32,7 +29,7 @@ export async function POST(event) {
       blogId,
       commentId,
       content,
-      userId,
+      userId: currentUser?.id,
     },
   );
 

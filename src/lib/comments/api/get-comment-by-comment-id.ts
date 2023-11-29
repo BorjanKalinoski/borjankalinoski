@@ -1,13 +1,8 @@
 import type { BlogComment } from '$lib/types/blog-comment';
+import ky from 'ky';
 
 export async function getCommentByCommentId(
   commentId: string,
 ): Promise<BlogComment> {
-  const response = await fetch(`/api/comments/${commentId}`, {
-    method: 'GET',
-  });
-
-  const comment = await response.json();
-
-  return comment;
+  return await ky.get(`/api/comments/${commentId}`).json<BlogComment>();
 }

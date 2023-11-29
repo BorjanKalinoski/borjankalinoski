@@ -4,7 +4,7 @@
 
 @layer components {
     .blog-stats {
-        @apply w-max flex rounded-[50px] px-1.5 py-0.5 border border-[#ccc] gap-[6px] items-center text-sm;
+        @apply w-max flex rounded-[50px] px-1.5 py-0.5 border border-[#ccc] gap-[6px] items-center text-sm select-none;
     }
 }
 
