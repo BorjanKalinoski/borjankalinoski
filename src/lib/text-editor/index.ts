@@ -151,4 +151,10 @@ export class TextEditor {
       callback(value);
     });
   }
+
+  public getWordCount(): number {
+    const text = this.editor.getText().trim();
+
+    return text.length > 0 ? text.split(/\s+/u).length : 0;
+  }
 }

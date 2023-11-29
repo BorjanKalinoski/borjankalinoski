@@ -26,6 +26,11 @@ DEFINE FIELD creator
     TYPE record<user>
     DEFAULT $auth.id;
 
+DEFINE FIELD wordCount
+    ON blog
+    TYPE number
+    DEFAULT 0;
+
 DEFINE FIELD createdAt
     ON blog
     VALUE $before OR time::now()

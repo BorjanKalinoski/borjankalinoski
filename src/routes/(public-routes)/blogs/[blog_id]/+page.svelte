@@ -8,6 +8,7 @@
     import BlogComment from "$lib/components/blog-comment.svelte";
     import { useCommentsQuery } from "$lib/comments/queries/use-comments-query";
     import AddCommentForm from "./add-comment-form.svelte";
+    import {getTimeToReadInMinutes} from "$lib/utils/get-time-to-read-in-minutes";
     export let data: PageServerData;
 
     let commentsQuery: ReturnType<typeof useCommentsQuery>;
@@ -38,6 +39,12 @@
                     {tag}
                 />
             {/each}
+        </div>
+
+        <div class="text-gray-600 text-xs">
+            {getTimeToReadInMinutes({
+                wordCount: data.blog.wordCount
+            })} min read
         </div>
     </div>
 

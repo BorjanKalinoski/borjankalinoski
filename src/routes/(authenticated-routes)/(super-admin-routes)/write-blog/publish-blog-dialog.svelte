@@ -14,6 +14,7 @@
     export let serverForm: PageServerData['form'];
     export let title: string;
     export let content: string;
+    export let wordCount: number;
 
     export let publishBlogDialog: HTMLDialogElement;
     export let tags: Tag[];
@@ -44,6 +45,7 @@
     afterUpdate(() => {
         $form.content = content;
         $form.title = title;
+        $form.wordCount = wordCount;
     });
 
     let selectedTags: string[] = [];
@@ -77,6 +79,13 @@
             type="text"
             bind:value={$form.content}
             name="content"
+            hidden
+        >
+
+        <input
+            type="text"
+            bind:value={$form.wordCount}
+            name="wordCount"
             hidden
         >
 
@@ -140,4 +149,3 @@
         </button>
     </form>
 </dialog>
-<!-- Fix issue where duplicate tags are entered -->

@@ -4,6 +4,7 @@
     import type {PageServerData} from "./$types";
     import BlogFilters from './blog-filters.svelte';
     import {filterBlogsByTagNames} from "$lib/utils/filter-blogs-by-tag-names";
+    import {getTimeToReadInMinutes} from "$lib/utils/get-time-to-read-in-minutes";
 
     export let data: PageServerData;
 </script>
@@ -13,7 +14,7 @@
     <BlogFilters tags={data.tags} />
 </div>
 
-{#each data.blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt}}
+{#each data.blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt, wordCount}}
         <div class="max-w-[320px] m-auto mb-6 p-2 border border-gray-300 rounded-lg" >
             <a href="/blogs/{id}">
                 <img
@@ -35,12 +36,15 @@
                 <div class="flex gap-x-2.5 gap-y-1.5 flex-wrap">
                     {#each tags as tag}
                         <Tag
-                            on:click={async ()=> await filterBlogsByTagNames([tag.name])}
+                            on:click={async () => await filterBlogsByTagNames([tag.name])}
                             {tag}
                         />
                     {/each}
                 </div>
 
+                <div class="text-xs text-gray-600">
+                    {getTimeToReadInMinutes({wordCount})} min read
+                </div>
             </div>
         </div>
 {/each}

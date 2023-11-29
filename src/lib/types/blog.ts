@@ -8,4 +8,5 @@ export type Blog = {
   thumbnailImageDownloadUrl: string;
   title: string;
   updatedAt: string;
+  wordCount: number;
 };

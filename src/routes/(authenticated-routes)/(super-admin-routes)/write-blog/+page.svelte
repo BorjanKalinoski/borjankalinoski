@@ -23,6 +23,7 @@
 
     let title: string;
     let content: string;
+    let wordCount: number;
 
     let publishBlogDialog: HTMLDialogElement;
 
@@ -41,6 +42,7 @@
     const onPublishDialogButtonClick = () => {
        content = textEditor.getHtml();
        title = textEditor.getLine(0)[0]?.text;
+        wordCount = textEditor.getWordCount();
 
         publishBlogDialog.showModal();
     };
@@ -137,6 +139,13 @@
 
 
 
-<PublishBlogDialog bind:publishBlogDialog serverForm={data.form} {title} {content} {tags} />
+<PublishBlogDialog
+    bind:publishBlogDialog
+    serverForm={data.form}
+    {title}
+    {content}
+    {tags}
+    {wordCount}
+/>
 
 

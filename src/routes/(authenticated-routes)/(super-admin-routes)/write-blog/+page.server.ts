@@ -13,6 +13,7 @@ const createBlogFormSchema = z
     tags: z.string().array(),
     thumbnail: z.custom<File>(),
     title: z.string(),
+    wordCount: z.number(),
   })
   .required()
   .strict();
@@ -72,7 +73,9 @@ export const actions: Actions = {
                 content = $content,
                 thumbnailImageDownloadUrl = $thumbnailImageDownloadUrl,
                 title = $title,
-                creator = $userId
+                creator = $userId,
+                wordCount = $wordCount,
+                timeToRead = math::ceil($wordCount / 200)
             )[0].id;
             
             FOR $tagName IN $tagNames {
@@ -100,6 +103,7 @@ export const actions: Actions = {
         thumbnailImageDownloadUrl,
         title: form.data.title,
         userId: currentUser?.id,
+        wordCount: form.data.wordCount,
       },
     );
 
