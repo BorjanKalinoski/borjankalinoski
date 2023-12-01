@@ -3,7 +3,7 @@ import type { User } from '$lib/types/user';
 export type Blog = {
   content: string;
   createdAt: string;
-  creator: User['id'];
+  creator: User;
   id: `blog:${string}`;
   thumbnailImageDownloadUrl: string;
   title: string;

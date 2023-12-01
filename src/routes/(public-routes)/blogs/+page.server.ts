@@ -5,7 +5,7 @@ import type { Tag } from '$lib/types/tag';
 
 async function getBlogsWithTags(): Promise<BlogWithTags[]> {
   const [blogs] = await database.query<[BlogWithTags[]]>(
-    `SELECT *, (id->blogTag.out.*) as tags from blog`,
+    `SELECT *, creator.* as creator, (id->blogTag.out.*) as tags from blog`,
   );
 
   return blogs;
@@ -17,7 +17,7 @@ async function getFilteredBlogsWithTags({
   tagFilters: Array<Tag['name']>;
 }): Promise<BlogWithTags[]> {
   const [blogs] = await database.query<[BlogWithTags[]]>(
-    `SELECT *, (id->blogTag.out.*) as tags from blog WHERE  $tagFilters ALLINSIDE ->blogTag.out.*.name  `,
+    `SELECT *, creator.* as creator, (id->blogTag.out.*) as tags from blog WHERE $tagFilters ALLINSIDE ->blogTag.out.*.name`,
     {
       tagFilters,
     },

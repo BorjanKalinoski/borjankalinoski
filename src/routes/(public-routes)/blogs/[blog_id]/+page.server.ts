@@ -36,6 +36,7 @@ export const load: PageServerLoad = async ({
   >(
     `
         SELECT *,
+            (creator.*) as creator,
             (count(id<-likes)) as numberOfLikes, 
             (count(id<-user_comments_on_blog)) as numberOfComments,
             (id->blogTag.out.*) as tags,

@@ -14,7 +14,7 @@
     <BlogFilters tags={data.tags} />
 </div>
 
-{#each data.blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt, wordCount}}
+{#each data.blogs as {id, title, tags, thumbnailImageDownloadUrl, createdAt, wordCount, creator}}
         <div class="max-w-[320px] m-auto mb-6 p-2 border border-gray-300 rounded-lg" >
             <a href="/blogs/{id}">
                 <img
@@ -24,14 +24,21 @@
                 />
             </a>
 
-            <div class="flex flex-col gap-1.5 mt-3">
+            <div class="flex flex-col gap-y-1.5 mt-3">
                 <a class="font-bold leading-[100%] text-lg" href="blogs/{id}">
                     {title}
                 </a>
 
-               <div class="text-sm">
+               <div class="text-xs text-gray-600">
+                   {creator.email}
+                   -
                    {dayjs(createdAt).format('D MMM, YYYY')}
                </div>
+
+
+                <div class="text-xs text-gray-600">
+                    {getTimeToReadInMinutes({wordCount})} min read
+                </div>
 
                 <div class="flex gap-x-2.5 gap-y-1.5 flex-wrap">
                     {#each tags as tag}
@@ -42,9 +49,6 @@
                     {/each}
                 </div>
 
-                <div class="text-xs text-gray-600">
-                    {getTimeToReadInMinutes({wordCount})} min read
-                </div>
             </div>
         </div>
 {/each}
