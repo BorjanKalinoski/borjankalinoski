@@ -1,7 +1,7 @@
 DEFINE TABLE tag SCHEMAFULL
     PERMISSIONS
         FOR create WHERE $scope = 'user'
-        FOR select WHERE $scope = 'user'
+        FOR select FULL
         FOR update NONE
         FOR delete NONE;
 

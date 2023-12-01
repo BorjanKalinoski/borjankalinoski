@@ -29,7 +29,13 @@ export const handle: Handle = async function ({ event, resolve }) {
 
   try {
     event.locals.isAuthenticated = await database.authenticate(token);
-    event.locals.currentUser = (await database.query<[User]>('$auth.*'))[0];
+    event.locals.currentUser = event.locals.isAuthenticated
+      ? (
+          await database.query<[User]>(
+            'SELECT *, role.*.role_type as role from ONLY $auth.*',
+          )
+        )[0]
+      : undefined;
   } catch (error) {
     console.error(
       `There was an error authenticating the user with token: ${token}. `,

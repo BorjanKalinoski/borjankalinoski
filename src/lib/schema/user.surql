@@ -26,3 +26,13 @@ DEFINE FIELD updatedAt
     ON user
     VALUE time::now()
     DEFAULT time::now();
+
+DEFINE FIELD role
+    ON user
+    TYPE record<user_role>
+    DEFAULT ((SELECT id FROM ONLY user_role WHERE role_type = "user").id);
+
+DEFINE INDEX user_email_index
+    ON user
+    FIELDS email
+    UNIQUE;

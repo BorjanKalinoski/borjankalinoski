@@ -21,23 +21,30 @@
 </style>
 
 <script lang="ts">
-    export let data;
+    import type {User} from "$lib/types/user";
+    import {userCanCreateContent} from "$lib/utils/user-can-create-content";
 
-    const isAuthenticated = data.isAuthenticated;
+    export let data: {
+        isAuthenticated: boolean;
+        currentUser?: User;
+    };
+
 </script>
 
 <header>
     <a href="/blogs">Blogs</a>
-    <a href="/write-blog">Write a blog</a>
+
+    {#if data.currentUser && userCanCreateContent(data.currentUser.role)}
+        <a href="/write-blog">Write a blog</a>
+    {/if}
+
     <a href="/cv">CV</a>
 
-    {#if (isAuthenticated)}
+    {#if (data.isAuthenticated)}
         <form action="/sign-out" method="POST">
             <button type="submit">Log out</button>
         </form>
-    {/if}
-
-    {#if (!isAuthenticated)}
+    {:else }
         <a href="/sign-up">Sign up</a>
     {/if}
 </header>
