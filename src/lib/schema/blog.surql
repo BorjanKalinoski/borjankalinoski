@@ -40,3 +40,8 @@ DEFINE FIELD updatedAt
     ON blog
     VALUE time::now()
     DEFAULT time::now();
+
+DEFINE INDEX blog_title_index
+    ON blog
+    FIELDS title
+    UNIQUE;

@@ -40,8 +40,8 @@
     ];
 
     const onPublishDialogButtonClick = () => {
-       content = textEditor.getHtml();
-       title = textEditor.getLine(0)[0]?.text;
+        content = textEditor.getHtml();
+        title = textEditor.getLine(0)[0]?.text;
         wordCount = textEditor.getWordCount();
 
         publishBlogDialog.showModal();

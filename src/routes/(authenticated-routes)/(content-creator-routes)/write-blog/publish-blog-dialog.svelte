@@ -43,9 +43,11 @@
     export const allTagsWithNames = tags.map((tag) => tag.name);
 
     afterUpdate(() => {
-        $form.content = content;
-        $form.title = title;
-        $form.wordCount = wordCount;
+        if (content) {
+            $form.content = content.slice(`<h1>${title}</h1>`.length);
+            $form.title = title;
+            $form.wordCount = wordCount;
+        }
     });
 
     let selectedTags: string[] = [];
