@@ -73,14 +73,20 @@
                 numberOfLines: 1,
             });
 
-            const isTitleHeading1 = titleFormat.header && titleFormat.header === TextEditorHeading.H1;
+            const isTitleHeadingChanged = !(titleFormat.header && titleFormat.header === TextEditorHeading.H1);
+            const isTitleFormatModified = Object.keys(titleFormat).length > 1;
 
-            if (!isTitleHeading1) {
+            const shouldPreventTitleEditing = isTitleHeadingChanged || isTitleFormatModified;
+
+            if (shouldPreventTitleEditing) {
+                textEditor.removeLineFormat(0);
+
                 textEditor.setHeading({
                     lineIndex: 0,
                     numberOfLines: 1,
                     value: TextEditorHeading.H1,
                 });
+                return;
             }
         });
 

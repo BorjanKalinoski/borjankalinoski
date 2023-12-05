@@ -157,4 +157,10 @@ export class TextEditor {
 
     return text.length > 0 ? text.split(/\s+/u).length : 0;
   }
+
+  public removeLineFormat(lineIndex: number): void {
+    const [line] = this.editor.getLine(lineIndex);
+
+    this.editor.removeFormat(lineIndex, line.length());
+  }
 }
