@@ -3,6 +3,10 @@
 import type { User } from '$lib/types/user';
 
 declare global {
+  interface GlobalEventHandlersEventMap {
+    dropimage: CustomEvent<{ file: File }>;
+  }
+
   namespace App {
     // type Error = {}
     interface Locals {

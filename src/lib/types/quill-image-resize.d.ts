@@ -1,1 +1,1 @@
-declare module 'src/types/quill-image-resize';
+declare module 'quill-image-resize';

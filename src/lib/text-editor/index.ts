@@ -2,7 +2,12 @@ import type { TextEditorHeading } from '$lib/text-editor/text-editor-heading';
 import type { TextEditorSource } from '$lib/text-editor/text-editor-source';
 import Quill, { type TextChangeHandler } from 'quill';
 import Delta from 'quill-delta';
+import QuillImageDropAndPaste, {
+  type ImageData,
+} from 'quill-image-drop-and-paste';
 import ImageResize from 'quill-image-resize';
+
+Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste);
 
 Quill.register('modules/imageResize', ImageResize);
 
@@ -20,8 +25,34 @@ type TextEditorOptions = {
   type: TextEditorType;
 };
 
+const dropImageEventName = 'dropimage';
+
+const imageDropAndPasteHandler = (
+  dataUrl: string | ArrayBuffer,
+  imageType: string,
+  imageData: ImageData,
+) => {
+  const file = imageData.toFile();
+
+  if (!file) {
+    return;
+  }
+
+  document.dispatchEvent(
+    new CustomEvent(dropImageEventName, {
+      detail: {
+        file,
+      },
+    }),
+  );
+};
+
 export class TextEditor {
   private readonly editor: Quill;
+
+  private handleDropImageEvent:
+    | (({ detail: { file } }: { detail: { file: File } }) => void)
+    | undefined;
 
   public constructor({
     editorReference,
@@ -39,6 +70,9 @@ export class TextEditor {
           container: toolbarOptions,
         },
         ...(isImageModuleEnabled && {
+          imageDropAndPaste: {
+            handler: imageDropAndPasteHandler,
+          },
           imageResize: {},
         }),
       },
@@ -47,7 +81,7 @@ export class TextEditor {
     });
 
     if (initialState) {
-      this.editor?.setContents(new Delta(initialState));
+      this.editor.setContents(new Delta(initialState));
     }
   }
 
@@ -60,7 +94,7 @@ export class TextEditor {
     numberOfLines: number;
     value: TextEditorHeading;
   }) {
-    this.editor?.formatLine(lineIndex, numberOfLines, 'header', value);
+    this.editor.formatLine(lineIndex, numberOfLines, 'header', value);
   }
 
   public getFormat({
@@ -70,15 +104,15 @@ export class TextEditor {
     lineIndex: number;
     numberOfLines: number;
   }) {
-    return this.editor?.getFormat(lineIndex, numberOfLines);
+    return this.editor.getFormat(lineIndex, numberOfLines);
   }
 
   public getLine(lineIndex: number) {
-    return this.editor?.getLeaf(lineIndex);
+    return this.editor.getLeaf(lineIndex);
   }
 
   public getContent() {
-    return this.editor?.getContents();
+    return this.editor.getContents();
   }
 
   public getHtml(): string {
@@ -86,19 +120,31 @@ export class TextEditor {
   }
 
   public getSelection() {
-    return this.editor?.getSelection();
+    return this.editor.getSelection();
   }
 
   public getContentLength() {
-    return this.editor?.getLength();
+    return this.editor.getLength();
   }
 
   public setSelectionHeading(value: string) {
-    this.editor?.format('header', value);
+    this.editor.format('header', value);
+  }
+
+  public onDropImage(callback: (file: File) => Promise<void>) {
+    this.handleDropImageEvent = ({ detail: { file } }) => {
+      void callback(file);
+    };
+
+    document.addEventListener(
+      dropImageEventName,
+      this.handleDropImageEvent,
+      false,
+    );
   }
 
   public onUploadImage(callback: (file: File | Error) => Promise<void>) {
-    const toolbar = this.editor?.getModule('toolbar');
+    const toolbar = this.editor.getModule('toolbar');
 
     toolbar.addHandler('image', async () => {
       const input = document.createElement('input');
@@ -137,15 +183,15 @@ export class TextEditor {
     source: TextEditorSource;
     value: string;
   }) {
-    this.editor?.insertEmbed(index, 'image', value, source);
+    this.editor.insertEmbed(index, 'image', value, source);
   }
 
   public onTextChange(textChangeCallback: TextChangeHandler) {
-    this.editor?.on('text-change', textChangeCallback);
+    this.editor.on('text-change', textChangeCallback);
   }
 
   public headerHandler(callback: (value: string) => void) {
-    const toolbar = this.editor?.getModule('toolbar');
+    const toolbar = this.editor.getModule('toolbar');
 
     toolbar.addHandler('header', (value: string) => {
       callback(value);
@@ -162,5 +208,27 @@ export class TextEditor {
     const [line] = this.editor.getLine(lineIndex);
 
     this.editor.removeFormat(lineIndex, line.length());
+  }
+
+  public insertText({ index, text }: { index: number; text: string }): void {
+    this.editor.insertText(index, text);
+  }
+
+  public deleteText({
+    index,
+    numberOfCharacters,
+  }: {
+    index: number;
+    numberOfCharacters: number;
+  }): void {
+    this.editor.deleteText(index, numberOfCharacters);
+  }
+
+  public onDestroy(): void {
+    document.removeEventListener(
+      dropImageEventName,
+      this
+        .handleDropImageEvent as unknown as EventListenerOrEventListenerObject,
+    );
   }
 }

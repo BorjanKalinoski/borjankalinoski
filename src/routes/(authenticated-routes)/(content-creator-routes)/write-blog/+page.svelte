@@ -9,7 +9,7 @@
 </style>
 
 <script lang="ts">
-    import {onMount} from 'svelte';
+    import {onDestroy, onMount} from 'svelte';
     import PublishBlogDialog from './publish-blog-dialog.svelte'
     import {TextEditor, type TextEditorInitialState} from "$lib/text-editor";
     import {TextEditorHeading} from "$lib/text-editor/text-editor-heading";
@@ -24,6 +24,8 @@
     let title: string;
     let content: string;
     let wordCount: number;
+
+    const uploadingImageMessage = '[Uploading Image...]';
 
     let publishBlogDialog: HTMLDialogElement;
 
@@ -90,19 +92,15 @@
             }
         });
 
-        textEditor.onUploadImage(async (file) => {
+        async function handleImageAdded(file: File | Error) {
             if (file instanceof Error) {
                 return;
             }
 
-            const storageReference = await uploadFile({
-                file,
-                location: '/temporary/new-blogs-post',
-            });
+            const currentSelectionIndex = textEditor.getSelection()?.index;
+            const endOfDocumentIndex = textEditor.getContentLength();
 
-            const downloadUrl = await getDownloadUrl(storageReference);
-
-            let indexOfImageToBeUploaded = textEditor.getSelection()?.index ?? textEditor.getContentLength();
+            let indexOfImageToBeUploaded = currentSelectionIndex ?? endOfDocumentIndex;
 
             const isSelectionAtHeader = indexOfImageToBeUploaded === 0;
 
@@ -110,11 +108,50 @@
                 indexOfImageToBeUploaded = 1;
             }
 
-            textEditor.insertImage({
+            textEditor.insertText({
                 index: indexOfImageToBeUploaded,
-                value: downloadUrl,
-                source: TextEditorSource.User,
+                text: uploadingImageMessage,
             });
+
+            let shouldDeleteUploadingImageMessage = true;
+
+            try {
+                const storageReference = await uploadFile({file, location: '/temporary/new-blogs-post'})
+
+
+                const downloadUrl = await getDownloadUrl(storageReference);
+
+                textEditor.deleteText({
+                    index: indexOfImageToBeUploaded,
+                    numberOfCharacters: uploadingImageMessage.length,
+                });
+
+                shouldDeleteUploadingImageMessage = false;
+
+                textEditor.insertImage({
+                    index: indexOfImageToBeUploaded,
+                    value: downloadUrl,
+                    source: TextEditorSource.User,
+                });
+            } catch (e) {
+                console.error(e)
+            }
+
+
+            if (shouldDeleteUploadingImageMessage) {
+                textEditor.deleteText({
+                    index: indexOfImageToBeUploaded,
+                    numberOfCharacters: uploadingImageMessage.length,
+                });
+            }
+        }
+
+        textEditor.onDropImage(async (file) => {
+            await handleImageAdded(file);
+        });
+
+        textEditor.onUploadImage(async (file) => {
+            await handleImageAdded(file);
         });
 
         textEditor.headerHandler((value) => {
@@ -128,6 +165,10 @@
 
             textEditor.setSelectionHeading(value);
         });
+    });
+
+    onDestroy(() => {
+        textEditor.onDestroy();
     });
 </script>
 
